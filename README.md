@@ -1,159 +1,113 @@
-# Seymour MiningCore Command Center
+# Seymour MiningCore
 
-> A modern, self-hosted command center for solo cryptocurrency mining.
+> A modern command center for solo cryptocurrency mining.
+
+![MiningCore](https://img.shields.io/badge/MiningCore-Compatible-green)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue)
+![ARM64](https://img.shields.io/badge/Raspberry%20Pi-ARM64-red)
+
+> 🏆 **Blocks Found by Seymour MiningCore Users:** *Coming Soon*
 
 ------------------------------------------------------------------------
 
-# Current Version
+# Dashboard
 
-**Version:** v0.9.0-alpha
+![Dashboard](docs/images/01-top-dashboard.png)
 
-**Status:** Internal Development Build
+The Seymour MiningCore dashboard provides a real-time overview of your
+mining operation with live statistics, charts, network information, and
+worker monitoring.
 
-This release is intended for development and early testing. The
-dashboard is functional and showcases the core vision of Seymour
-MiningCore.
+------------------------------------------------------------------------
+
+# Live Pool Analytics
+
+![Graphs](docs/images/02-graphs-minerlist.png)
+
+Features include:
+
+-   Live Pool Hashrate
+-   Per-Miner Hashrate
+-   ASIC Fleet Command Center
+-   Interactive Charts
+-   Click-to-expand graphs
+
+------------------------------------------------------------------------
+
+# Solo Lottery & Probability
+
+![Solo Lottery](docs/images/03-solo-lottery-lastblock.png)
+
+Know exactly where you stand.
+
+-   Daily chance
+-   Weekly chance
+-   Monthly chance
+-   Expected solo time
+-   Latest block information
+-   Probability simulator
+
+------------------------------------------------------------------------
+
+# Fleet Statistics
+
+![Block Stats](docs/images/04-block-stats.png)
+
+Monitor the health of your mining farm.
+
+-   Fleet Health Score
+-   Block Race Meter
+-   Solo Hall of Fame
+-   Achievement System
+-   Historical Statistics
+
+------------------------------------------------------------------------
+
+# TV Mode
+
+![TV Mode](docs/images/05-tv-mode.png)
+
+Perfect for mounting on a monitor in your mining room.
+
+Large fonts, rotating statistics, and live status updates.
+
+------------------------------------------------------------------------
+
+# TV Dashboard
+
+![TV View](docs/images/06-tv-view.png)
+
+A dedicated full-screen monitoring interface for 24/7 operation.
 
 ------------------------------------------------------------------------
 
 # Features
 
-## Dashboard
-
--   Live Pool Status
--   Live Pool Hashrate
--   Per-Miner Hashrate
--   ASIC Command Center
--   Fleet Health Score
--   Network Difficulty
--   Latest Block Preview
--   Multi-Coin Mining Operations
--   Educational Tooltips
--   TV / NOC Display Mode
-
-## Analytics
-
--   Multi-Coin Solo Lottery Meter
--   Probability Simulator
--   Block Race Meter
+-   Multi-coin dashboard (BCH, BTC, DOGE, DGB and more)
+-   Live ASIC fleet monitoring
+-   Solo probability calculator
+-   Expected solo time estimator
+-   Fleet health scoring
+-   Achievement system
 -   Solo Hall of Fame
--   Achievement System
-
-## Mining
-
--   Transparent 0.75% Developer Fee Display
--   Block Celebration Screen
--   Multi-coin Architecture (BCH live, BTC/DOGE/DGB planned)
+-   Block celebration screen
+-   TV monitoring mode
+-   Docker deployment
+-   ARM64 / Raspberry Pi support
+-   MiningCore compatible
 
 ------------------------------------------------------------------------
 
-# Runtime Configuration
+# Installation
 
-The dashboard is portable and does **not** require fixed IP addresses.
+Clone the repository:
 
-## Dashboard
-
-Default:
-
-``` text
-http://<server-ip>:8559
+``` bash
+git clone https://github.com/imdmanuc2/seymour-miningcore.git
 ```
 
-Example:
-
-``` text
-http://192.168.1.154:8559
-```
-
-## MiningCore API
-
-Configured in `config.js`.
-
-Example:
-
-``` text
-http://<server-ip>:4000
-```
-
-or
-
-``` text
-https://mining.example.com
-```
-
-## Stratum
-
-Typical:
-
-``` text
-stratum+tcp://<server-ip>:6001
-```
+Follow the installation guide in the project documentation.
 
 ------------------------------------------------------------------------
 
-# Installation (Planned)
-
-1.  Install MiningCore.
-2.  Configure PostgreSQL.
-3.  Configure the coin daemon(s).
-4.  Copy Seymour MiningCore Command Center.
-5.  Edit `config.js`.
-6.  Start your web server.
-
-------------------------------------------------------------------------
-
-# Development Roadmap
-
-## v0.9.0-alpha (Current)
-
--   Core dashboard
--   Charts
--   ASIC Fleet
--   Fleet Health
--   Hall of Fame
--   Achievements
--   Lottery Meter
--   Probability Simulator
--   Block Celebration
--   Multi-coin UI
-
-## v1.0.0-beta
-
--   Public YouTuber testing
--   ASIC Command Center
--   Miner drill-down pages
--   Temperature monitoring
--   Fan monitoring
--   Power monitoring
--   Miner IP integration
--   Alerting system
--   Improved installation
-
-## v1.0.0
-
--   Stable public release
--   BCH support
--   Multi-user support
--   Automatic updates
--   Documentation
--   Installer
-
-## v1.1
-
--   Bitcoin (BTC)
--   Multi-pool support
--   Historical analytics
--   Revenue reporting
-
-## Future
-
--   DOGE
--   DGB
--   Additional SHA-256 coins
--   Mobile dashboard
--   Fleet maps
--   AI recommendations
-
-------------------------------------------------------------------------
-
-Built with ❤️ by Seymour MiningCore.
+Built with ❤️ for the solo mining community.

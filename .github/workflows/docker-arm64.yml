@@ -1,0 +1,30 @@
+name: Build ARM64 Docker Image
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ARM64 image
+        run: |
+          docker build -f Dockerfile.arm64 -t ghcr.io/imdmanuc2/seymour-miningcore:arm64 .
+          docker push ghcr.io/imdmanuc2/seymour-miningcore:arm64

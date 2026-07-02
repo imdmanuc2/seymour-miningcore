@@ -201,7 +201,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
         object[] args;
 
         var identifier = !string.IsNullOrEmpty(clusterConfig.PaymentProcessing?.CoinbaseString) ?
-            clusterConfig.PaymentProcessing.CoinbaseString.Trim() : "Miningcore";
+            clusterConfig.PaymentProcessing.CoinbaseString.Trim() : "Seymour MiningCore";
 
         var comment = $"{identifier} Payment";
 

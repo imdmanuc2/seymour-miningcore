@@ -157,7 +157,7 @@ public class ShareRecorder : BackgroundService
     {
         writer.WriteLine("# The existence of this file means shares could not be committed to the database.");
         writer.WriteLine("# You should stop the pool cluster and run the following command:");
-        writer.WriteLine("# miningcore -c <path-to-config> -rs <path-to-this-file>\n");
+        writer.WriteLine("# seymour-miningcore -c <path-to-config> -rs <path-to-this-file>\n");
     }
 
     public async Task RecoverSharesAsync(string filename)

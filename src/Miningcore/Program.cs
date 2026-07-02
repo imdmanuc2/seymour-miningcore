@@ -614,8 +614,8 @@ public class Program : BackgroundService
 
     private static void Logo()
     {
-        Console.WriteLine(@" 
- ███████╗███████╗██╗   ██╗███╗   ███╗ ██████╗ ██╗   ██╗██████╗ 
+        Console.WriteLine(@"
+ ███████╗███████╗██╗   ██╗███╗   ███╗ ██████╗ ██╗   ██╗██████╗
  ██╔════╝██╔════╝╚██╗ ██╔╝████╗ ████║██╔═══██╗██║   ██║██╔══██╗
  ███████╗█████╗   ╚████╔╝ ██╔████╔██║██║   ██║██║   ██║██████╔╝
  ╚════██║██╔══╝    ╚██╔╝  ██║╚██╔╝██║██║   ██║██║   ██║██╔══██╗
@@ -624,8 +624,14 @@ public class Program : BackgroundService
 ");
 
         Console.WriteLine(" Seymour MiningCore");
-        Console.WriteLine(" ARM64-ready mining pool software");
+        Console.WriteLine(" ARM64 BCH Solo Mining for Umbrel");
         Console.WriteLine(" https://github.com/imdmanuc2/seymour-miningcore");
+        Console.WriteLine();
+        Console.WriteLine(" Support Seymour MiningCore Development:\n");
+        Console.WriteLine(" BTC  - bc1qasa0lk6l7s47sw9wusqdpug4scryckjjgacepv");
+        Console.WriteLine(" ETH  - 0x9E729aDC5545dc25e4A14d36584B6b56dbfBe066");
+        Console.WriteLine(" SOL  - 9SYYNtHnEMUJ8L2Vz6peddph72md9LMsDy6JSSihNQz9");
+        Console.WriteLine(" ZEC  - t1cxiHnXWomJb93uAmP9ZDJvHj95JTr9nEW");
         Console.WriteLine();
     }
 

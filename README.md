@@ -1,74 +1,159 @@
 # Seymour MiningCore Command Center
 
-Modern self-hosted solo mining dashboard for Seymour MiningCore.
-
-## Current Features
-
--   BCH Solo Mining Command Center
--   Live pool status
--   Live pool hashrate
--   Per-miner hashrate chart
--   ASIC Fleet / ASIC Command Center
--   Multi-coin ready architecture (BCH live, BTC/DOGE/DGB staged)
--   Network difficulty chart
--   Probability Simulator
--   Multi-Coin Solo Lottery Meter
--   Transparent developer fee calculator (0.75%)
--   Block celebration screen
--   Fleet Health Score
--   Block Race Meter
--   Solo Hall of Fame
--   Achievement system
--   TV / NOC display mode
--   Educational tooltips
--   Responsive layout
-
-## Runtime
-
-Dashboard: http://192.168.1.154:8559
-
-MiningCore API: http://127.0.0.1:4000
-
-BCH Stratum: stratum+tcp://192.168.1.154:6001
-
-## Vision
-
-Create the best self-hosted solo mining command center available for
-home miners and professional mining farms.
-
-## Roadmap
-
-### Phase 1
-
--   Core dashboard
--   Charts
--   Fleet cards
--   Lottery meter
--   Probability simulator
--   Achievements
--   Hall of Fame
--   Fleet Health
--   Block celebration
-
-### Phase 2
-
--   ASIC Command Center
--   Miner drill-down
--   Temperature
--   Fan speed
--   Power monitoring
--   Alerts
--   Notifications
-
-### Phase 3
-
--   BTC
--   DOGE
--   DGB
--   Multi-pool support
--   Historical analytics
--   Revenue analytics
+> A modern, self-hosted command center for solo cryptocurrency mining.
 
 ------------------------------------------------------------------------
 
-Built by Seymour MiningCore.
+# Current Version
+
+**Version:** v0.9.0-alpha
+
+**Status:** Internal Development Build
+
+This release is intended for development and early testing. The
+dashboard is functional and showcases the core vision of Seymour
+MiningCore.
+
+------------------------------------------------------------------------
+
+# Features
+
+## Dashboard
+
+-   Live Pool Status
+-   Live Pool Hashrate
+-   Per-Miner Hashrate
+-   ASIC Command Center
+-   Fleet Health Score
+-   Network Difficulty
+-   Latest Block Preview
+-   Multi-Coin Mining Operations
+-   Educational Tooltips
+-   TV / NOC Display Mode
+
+## Analytics
+
+-   Multi-Coin Solo Lottery Meter
+-   Probability Simulator
+-   Block Race Meter
+-   Solo Hall of Fame
+-   Achievement System
+
+## Mining
+
+-   Transparent 0.75% Developer Fee Display
+-   Block Celebration Screen
+-   Multi-coin Architecture (BCH live, BTC/DOGE/DGB planned)
+
+------------------------------------------------------------------------
+
+# Runtime Configuration
+
+The dashboard is portable and does **not** require fixed IP addresses.
+
+## Dashboard
+
+Default:
+
+``` text
+http://<server-ip>:8559
+```
+
+Example:
+
+``` text
+http://192.168.1.154:8559
+```
+
+## MiningCore API
+
+Configured in `config.js`.
+
+Example:
+
+``` text
+http://<server-ip>:4000
+```
+
+or
+
+``` text
+https://mining.example.com
+```
+
+## Stratum
+
+Typical:
+
+``` text
+stratum+tcp://<server-ip>:6001
+```
+
+------------------------------------------------------------------------
+
+# Installation (Planned)
+
+1.  Install MiningCore.
+2.  Configure PostgreSQL.
+3.  Configure the coin daemon(s).
+4.  Copy Seymour MiningCore Command Center.
+5.  Edit `config.js`.
+6.  Start your web server.
+
+------------------------------------------------------------------------
+
+# Development Roadmap
+
+## v0.9.0-alpha (Current)
+
+-   Core dashboard
+-   Charts
+-   ASIC Fleet
+-   Fleet Health
+-   Hall of Fame
+-   Achievements
+-   Lottery Meter
+-   Probability Simulator
+-   Block Celebration
+-   Multi-coin UI
+
+## v1.0.0-beta
+
+-   Public YouTuber testing
+-   ASIC Command Center
+-   Miner drill-down pages
+-   Temperature monitoring
+-   Fan monitoring
+-   Power monitoring
+-   Miner IP integration
+-   Alerting system
+-   Improved installation
+
+## v1.0.0
+
+-   Stable public release
+-   BCH support
+-   Multi-user support
+-   Automatic updates
+-   Documentation
+-   Installer
+
+## v1.1
+
+-   Bitcoin (BTC)
+-   Multi-pool support
+-   Historical analytics
+-   Revenue reporting
+
+## Future
+
+-   DOGE
+-   DGB
+-   Additional SHA-256 coins
+-   Mobile dashboard
+-   Fleet maps
+-   AI recommendations
+
+------------------------------------------------------------------------
+
+Built with ❤️ by Seymour MiningCore.

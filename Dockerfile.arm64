@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0-bookworm-slim AS build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git ca-certificates build-essential cmake pkg-config libssl-dev libsodium-dev libzmq3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY . .
+
+# BCH/SHA256 does not need RandomX native libraries.
+RUN sed -i '/build-libs-linux.sh/d' src/Miningcore/Miningcore.csproj
+
+RUN dotnet publish src/Miningcore/Miningcore.csproj -c Release -o /app/build
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 libsodium23 libzmq5 ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app/build
+COPY --from=build /app/build /app/build
+
+ENTRYPOINT ["dotnet", "Miningcore.dll", "-c", "/app/config.json"]

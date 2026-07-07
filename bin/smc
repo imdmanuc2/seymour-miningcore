@@ -14,6 +14,7 @@ source "${ROOT_DIR}/lib/service.sh"
 source "${ROOT_DIR}/lib/token.sh"
 source "${ROOT_DIR}/lib/license.sh"
 source "${ROOT_DIR}/lib/pool.sh"
+source "${ROOT_DIR}/lib/doctor.sh"
 
 cmd="${1:-help}"
 subcmd="${2:-}"
@@ -22,28 +23,48 @@ show_help() {
   cat <<'HELP'
 Seymour MiningCore CLI
 
-Usage:
+System:
   smc version
   smc status
   smc health
+  smc doctor
+
+Diagnostics:
   smc deps
-  smc license
   smc install-plan
+  smc graph
+
+Pools:
+  smc pool list
+  smc pool template
+  smc pool validate <pool.json>
+  smc pool create
+  smc pool enable <poolId>
+  smc pool disable <poolId>
+  smc pool remove <poolId>
+  smc pool restore <poolId>
+
+Services:
+  smc service status [service]
+  smc service restart <service>
+
+Security:
+  smc token status
+  smc token create
+  smc token show
+  smc token rotate
+
+Licensing:
+  smc license status
+  smc license show
+
+Legacy Compatibility:
   smc pools
   smc pool-template
   smc pool-validate <pool.json>
 
-Preferred Pool Commands:
-  smc pool list
-  smc pool template
-  smc pool validate <pool.json>
-
-Future:
+Coming Soon:
   smc install
-  smc pool create
-  smc pool remove
-  smc pool enable
-  smc pool disable
   smc node test
   smc backup
   smc restore
@@ -67,6 +88,10 @@ case "$cmd" in
 
   health)
     smc_health
+    ;;
+
+  doctor)
+    smc_doctor
     ;;
 
   deps|dependencies)

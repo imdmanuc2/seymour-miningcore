@@ -1,0 +1,15 @@
+[Unit]
+Description=Seymour MiningCore REST API
+After=network.target
+
+[Service]
+Type=simple
+User=imdmanuc
+WorkingDirectory=/home/imdmanuc/seymour-miningcore
+Environment=PATH=/home/imdmanuc/seymour-miningcore/api/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/imdmanuc/seymour-miningcore/api/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8560 api.app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

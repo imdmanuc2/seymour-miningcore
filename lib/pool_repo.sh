@@ -103,3 +103,54 @@ pool_repo_save() {
   cp "$source_file" "$dest_file"
   echo "$dest_file"
 }
+
+pool_repo_restore_latest() {
+  local pool_id="${1:-}"
+  local removed_dir active_file latest_file
+
+  removed_dir="$(pool_repo_removed_dir)"
+  active_file="$(pool_repo_file "$pool_id")"
+
+  if [[ -z "$pool_id" ]]; then
+    echo "pool_repo_restore_latest requires pool_id" >&2
+    return 1
+  fi
+
+  if [[ -f "$active_file" ]]; then
+    cat <<JSON
+{
+  "success": false,
+  "message": "Pool already exists. Remove it before restoring.",
+  "poolId": "${pool_id}",
+  "configFile": "${active_file}"
+}
+JSON
+    return 1
+  fi
+
+  latest_file="$(ls -t "${removed_dir}/${pool_id}-"*.json 2>/dev/null | head -n 1 || true)"
+
+  if [[ -z "$latest_file" ]]; then
+    cat <<JSON
+{
+  "success": false,
+  "message": "No removed pool backup found.",
+  "poolId": "${pool_id}"
+}
+JSON
+    return 1
+  fi
+
+  cp "$latest_file" "$active_file"
+
+  cat <<JSON
+{
+  "success": true,
+  "message": "Pool restored.",
+  "poolId": "${pool_id}",
+  "restoredFrom": "${latest_file}",
+  "configFile": "${active_file}",
+  "requiresRestart": true
+}
+JSON
+}

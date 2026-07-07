@@ -328,3 +328,14 @@ smc_pool_remove() {
 
   pool_repo_archive "$pool_id"
 }
+
+smc_pool_restore() {
+  local pool_id="${1:-}"
+
+  if [[ -z "$pool_id" ]]; then
+    echo "Usage: smc pool restore <poolId>" >&2
+    exit 1
+  fi
+
+  pool_repo_restore_latest "$pool_id"
+}

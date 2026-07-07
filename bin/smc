@@ -104,6 +104,9 @@ case "$cmd" in
       remove)
         smc_pool_remove "${3:-}"
         ;;
+      restore)
+        smc_pool_restore "${3:-}"
+        ;;
       *)
         echo "Unknown pool command: ${subcmd}" >&2
         echo "Run: smc help" >&2

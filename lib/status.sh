@@ -14,6 +14,7 @@ smc_status() {
   os_support="$(supported_os_status)"
 
   miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
+  api_status="$(service_status "seymour-miningcore-api")"
   postgres_status="$(service_status "postgresql")"
   console_port_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
   pool_count="$(find "${ROOT_DIR}/config/pools" -maxdepth 1 -name '*.json' 2>/dev/null | wc -l)"
@@ -58,6 +59,7 @@ smc_status() {
   },
   "services": {
     "miningcore": "${miningcore_status}",
+    "miningcoreApi": "${api_status}",
     "postgresql": "${postgres_status}",
     "localConsolePort": "${console_port_status}"
   },

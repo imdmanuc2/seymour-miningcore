@@ -294,6 +294,73 @@ JSON
 JSON
     ;;
 
+  pool-validate)
+
+    FILE="${2:-}"
+
+    if [[ -z "$FILE" ]]; then
+      echo "Usage:"
+      echo "  smc pool-validate <pool.json>"
+      exit 1
+    fi
+
+    if [[ ! -f "$FILE" ]]; then
+      echo "ERROR: File not found:"
+      echo "$FILE"
+      exit 1
+    fi
+
+    REQUIRED_FIELDS=(
+      ".poolId"
+      ".coin"
+      ".network"
+      ".mode"
+      ".rpc.host"
+      ".rpc.port"
+      ".wallet.address"
+      ".payout.feePercent"
+    )
+
+    VALID=true
+
+    for FIELD in "${REQUIRED_FIELDS[@]}"; do
+
+      VALUE="$(jq -r "$FIELD // empty" "$FILE")"
+
+      if [[ -z "$VALUE" ]]; then
+
+        VALID=false
+
+        echo "Missing: $FIELD"
+
+      fi
+
+    done
+
+    if $VALID; then
+
+      cat <<JSON
+{
+  "valid": true,
+  "message": "Pool configuration is valid."
+}
+JSON
+
+    else
+
+      cat <<JSON
+{
+  "valid": false,
+  "message": "Pool configuration contains missing fields."
+}
+JSON
+
+      exit 1
+
+    fi
+
+    ;;
+
   help|--help|-h)
     cat <<'HELP'
 Seymour MiningCore CLI
@@ -305,15 +372,24 @@ Usage:
   smc pools
   smc deps
   smc license
+  smc install-plan
+  smc pool-template
+  smc pool-validate <pool.json>
 
 Future:
   smc install
   smc pool add
+  smc pool list
+  smc pool validate
   smc pool remove
+  smc pool enable
+  smc pool disable
   smc node test
   smc backup
+  smc restore
   smc update
-  smc pool-template
+  smc diagnostics
+  
 HELP
     ;;
 

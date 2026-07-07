@@ -1,53 +1,31 @@
 {
   "poolId": "btc-solo",
-
   "name": "Bitcoin Solo",
-
   "coin": "BTC",
-
   "network": "mainnet",
-
   "mode": "solo",
-
   "enabled": true,
-
   "stratum": {
-
+    "host": "",
     "port": 3333,
-
     "tls": false
-
   },
-
   "api": {
-
+    "enabled": true,
     "port": 4000
-
   },
-
   "rpc": {
-
     "host": "127.0.0.1",
-
     "port": 8332,
-
     "username": "rpcuser",
-
     "password": "rpcpassword"
-
   },
-
   "wallet": {
-
     "address": "YOUR_BTC_WALLET"
-
   },
-
   "payout": {
-
     "scheme": "SOLO",
-
+    "minimumPayment": "0.0001",
     "feePercent": 0.75
-
   }
 }

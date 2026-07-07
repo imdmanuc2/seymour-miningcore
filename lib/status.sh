@@ -20,6 +20,7 @@ smc_status() {
   enabled_pools="$(jq -s '[.[] | select(.enabled == true)] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
   solo_pools="$(jq -s '[.[] | select(.mode == "solo")] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
   public_pools="$(jq -s '[.[] | select(.mode == "public")] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
+  pools_json="$(pool_repo_list | jq -c '.pools')"
 
   cat <<JSON
 {
@@ -69,7 +70,7 @@ smc_status() {
     "blocksFound24h": 0,
     "pendingPayments": 0
   },
-  "pools": [],
+  "pools": ${pools_json},
   "health": {
     "overall": "unknown",
     "checks": []

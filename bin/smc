@@ -11,6 +11,7 @@ source "${ROOT_DIR}/lib/health.sh"
 source "${ROOT_DIR}/lib/deps.sh"
 source "${ROOT_DIR}/lib/install.sh"
 source "${ROOT_DIR}/lib/service.sh"
+source "${ROOT_DIR}/lib/token.sh"
 source "${ROOT_DIR}/lib/pool.sh"
 
 cmd="${1:-help}"
@@ -123,6 +124,10 @@ case "$cmd" in
 
   service)
     smc_service_action "${2:-status}" "${3:-${MININGCORE_SERVICE}}"
+    ;;
+
+  token)
+    smc_token_command "${2:-status}"
     ;;
 
   license)

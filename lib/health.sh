@@ -3,11 +3,13 @@ set -euo pipefail
 
 smc_health() {
   local miningcore_status postgres_status disk_status console_status os_support overall
+  local pool_validation_status pool_validation_message
 
   miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
   postgres_status="$(service_status "postgresql")"
   console_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
   os_support="$(supported_os_status)"
+
   disk_status="healthy"
   overall="healthy"
 
@@ -21,6 +23,24 @@ smc_health() {
   fi
 
   if [ "${miningcore_status}" = "not-installed" ]; then
+    overall="warning"
+  fi
+
+  pool_validation_status="healthy"
+  pool_validation_message="All pool configs are valid"
+
+  if ls "${ROOT_DIR}"/config/pools/*.json >/dev/null 2>&1; then
+    for pool_file in "${ROOT_DIR}"/config/pools/*.json; do
+      if ! smc_pool_validate "$pool_file" >/dev/null 2>&1; then
+        pool_validation_status="unhealthy"
+        pool_validation_message="One or more pool configs are invalid"
+        overall="warning"
+        break
+      fi
+    done
+  else
+    pool_validation_status="warning"
+    pool_validation_message="No active pool configs found"
     overall="warning"
   fi
 
@@ -49,6 +69,11 @@ smc_health() {
       "name": "disk",
       "status": "${disk_status}",
       "message": "Root disk usage check"
+    },
+    {
+      "name": "pool-configs",
+      "status": "${pool_validation_status}",
+      "message": "${pool_validation_message}"
     },
     {
       "name": "os-support",

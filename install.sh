@@ -116,6 +116,7 @@ main() {
   fi
 
   STATUS_JSON="$("$SMC" status)"
+  DEPS_JSON="$("$SMC" deps)"
 
   if [[ "$INSTALL_MODE" == "json" ]]; then
     cat <<JSON
@@ -135,7 +136,8 @@ main() {
     "required": true,
     "percent": 0.75
   },
-  "smcStatus": ${STATUS_JSON}
+  "smcStatus": ${STATUS_JSON},
+  "dependencies": ${DEPS_JSON}
 }
 JSON
   else

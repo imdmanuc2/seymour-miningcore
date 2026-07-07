@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 source "${ROOT_DIR}/lib/common.sh"
 source "${ROOT_DIR}/lib/pool_repo.sh"
+source "${ROOT_DIR}/lib/graph.sh"
 source "${ROOT_DIR}/lib/status.sh"
 source "${ROOT_DIR}/lib/health.sh"
 source "${ROOT_DIR}/lib/deps.sh"
@@ -55,6 +56,10 @@ case "$cmd" in
 
   status)
     smc_status
+    ;;
+
+  graph)
+    smc_graph
     ;;
 
   health)

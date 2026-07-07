@@ -68,7 +68,9 @@ def root():
             "/api/v1/graph",
             "/api/v1/version",
             "/api/v1/services",
-            "/api/v1/services/<service_name>"
+            "/api/v1/services/<service_name>",
+            "/api/v1/deps",
+            "/api/v1/install-plan"
         ]
     })
 
@@ -82,6 +84,17 @@ def status():
 @app.get("/api/v1/health")
 def health():
     data, code = run_smc("health")
+    return jsonify(data), code
+
+@app.get("/api/v1/deps")
+def deps():
+    data, code = run_smc("deps")
+    return jsonify(data), code
+
+
+@app.get("/api/v1/install-plan")
+def install_plan():
+    data, code = run_smc("install-plan")
     return jsonify(data), code
 
 

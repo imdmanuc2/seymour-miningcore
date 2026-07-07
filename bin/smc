@@ -1,188 +1,50 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SMC_VERSION="0.9.0-alpha"
-SMC_PRODUCT="Seymour MiningCore"
-SMC_FEE_PERCENT="0.75"
-LOCAL_CONSOLE_PORT="8559"
-MININGCORE_SERVICE="seymour-miningcore"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+source "${ROOT_DIR}/lib/common.sh"
+source "${ROOT_DIR}/lib/status.sh"
+source "${ROOT_DIR}/lib/health.sh"
+source "${ROOT_DIR}/lib/deps.sh"
+source "${ROOT_DIR}/lib/install.sh"
+source "${ROOT_DIR}/lib/pool.sh"
 
 cmd="${1:-help}"
+subcmd="${2:-}"
 
-json_escape() {
-  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
-}
+show_help() {
+  cat <<'HELP'
+Seymour MiningCore CLI
 
-service_status() {
-  local service="$1"
-  if systemctl list-unit-files "${service}.service" >/dev/null 2>&1; then
-    if systemctl is-active "${service}" >/dev/null 2>&1; then
-      echo "running"
-    else
-      echo "stopped"
-    fi
-  else
-    echo "not-installed"
-  fi
-}
+Usage:
+  smc version
+  smc status
+  smc health
+  smc deps
+  smc license
+  smc install-plan
+  smc pools
+  smc pool-template
+  smc pool-validate <pool.json>
 
-port_status() {
-  local port="$1"
-  if ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]${port}$"; then
-    echo "open"
-  else
-    echo "closed"
-  fi
-}
+Preferred Pool Commands:
+  smc pool list
+  smc pool template
+  smc pool validate <pool.json>
 
-primary_ip() {
-  hostname -I 2>/dev/null | awk '{print $1}'
-}
-
-supported_os_status() {
-  local id version
-  id="$(. /etc/os-release && echo "$ID")"
-  version="$(. /etc/os-release && echo "${VERSION_ID:-unknown}")"
-
-  case "${id}:${version}" in
-    ubuntu:24.04|debian:12|debian:13)
-      echo "supported"
-      ;;
-    *)
-      echo "dev-unsupported"
-      ;;
-  esac
-}
-
-json_status() {
-  local hostname os uptime_seconds disk_used memory_used ip os_support
-  local miningcore_status postgres_status console_port_status
-
-  hostname="$(hostname)"
-  os="$(. /etc/os-release && echo "$PRETTY_NAME")"
-  uptime_seconds="$(awk '{print int($1)}' /proc/uptime)"
-  disk_used="$(df / | awk 'NR==2 {gsub("%","",$5); print $5}')"
-  memory_used="$(free | awk '/Mem:/ {printf "%.0f", ($3/$2)*100}')"
-  ip="$(primary_ip)"
-  os_support="$(supported_os_status)"
-
-  miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
-  postgres_status="$(service_status "postgresql")"
-  console_port_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
-
-  cat <<JSON
-{
-  "product": "${SMC_PRODUCT}",
-  "role": "managed-mining-node",
-  "version": "${SMC_VERSION}",
-  "apiVersion": "v1",
-  "status": "${miningcore_status}",
-  "localConsoleUrl": "http://${ip}:${LOCAL_CONSOLE_PORT}",
-  "developerFee": {
-    "required": true,
-    "percent": ${SMC_FEE_PERCENT},
-    "status": "active"
-  },
-  "license": {
-    "status": "draft",
-    "type": "commercial-open-source",
-    "tamperStatus": "unknown"
-  },
-  "nexus": {
-    "connected": false,
-    "commandCenterUrl": null,
-    "lastSync": null
-  },
-  "system": {
-    "hostname": "$(json_escape "$hostname")",
-    "primaryIp": "${ip}",
-    "os": "$(json_escape "$os")",
-    "osSupport": "${os_support}",
-    "cpuLoadPercent": 0,
-    "memoryUsedPercent": ${memory_used},
-    "diskUsedPercent": ${disk_used},
-    "uptimeSeconds": ${uptime_seconds}
-  },
-  "services": {
-    "miningcore": "${miningcore_status}",
-    "postgresql": "${postgres_status}",
-    "localConsolePort": "${console_port_status}"
-  },
-  "summary": {
-    "poolCount": 0,
-    "enabledPools": 0,
-    "soloPools": 0,
-    "publicPools": 0,
-    "connectedMiners": 0,
-    "totalHashrate": "0 H/s",
-    "blocksFound24h": 0,
-    "pendingPayments": 0
-  },
-  "pools": [],
-  "health": {
-    "overall": "unknown",
-    "checks": []
-  }
-}
-JSON
-}
-
-json_health() {
-  local miningcore_status postgres_status disk_status console_status os_support overall
-  miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
-  postgres_status="$(service_status "postgresql")"
-  console_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
-  os_support="$(supported_os_status)"
-  disk_status="healthy"
-  overall="healthy"
-
-  if [ "$(df / | awk 'NR==2 {gsub("%", "", $5); print $5}')" -ge 90 ]; then
-    disk_status="warning"
-    overall="warning"
-  fi
-
-  if [ "${postgres_status}" != "running" ]; then
-    overall="warning"
-  fi
-
-  if [ "${miningcore_status}" = "not-installed" ]; then
-    overall="warning"
-  fi
-
-  cat <<JSON
-{
-  "product": "${SMC_PRODUCT}",
-  "version": "${SMC_VERSION}",
-  "overall": "${overall}",
-  "checks": [
-    {
-      "name": "miningcore-service",
-      "status": "${miningcore_status}",
-      "message": "Seymour MiningCore service status"
-    },
-    {
-      "name": "postgresql",
-      "status": "${postgres_status}",
-      "message": "PostgreSQL service status"
-    },
-    {
-      "name": "local-console-port",
-      "status": "${console_status}",
-      "message": "Local Console/API port ${LOCAL_CONSOLE_PORT}"
-    },
-    {
-      "name": "disk",
-      "status": "${disk_status}",
-      "message": "Root disk usage check"
-    },
-    {
-      "name": "os-support",
-      "status": "${os_support}",
-      "message": "Official beta target is Ubuntu 24.04 LTS or Debian 12/13"
-    }
-  ]
-}
-JSON
+Future:
+  smc install
+  smc pool create
+  smc pool remove
+  smc pool enable
+  smc pool disable
+  smc node test
+  smc backup
+  smc restore
+  smc update
+  smc diagnostics
+HELP
 }
 
 case "$cmd" in
@@ -191,47 +53,50 @@ case "$cmd" in
     ;;
 
   status)
-    json_status
+    smc_status
     ;;
 
   health)
-    json_health
-    ;;
-
-  pools|pool-list)
-    cat <<JSON
-{
-  "pools": []
-}
-JSON
+    smc_health
     ;;
 
   deps|dependencies)
-  dep_status() {
-    local name="$1"
-    local command="$2"
+    smc_deps
+    ;;
 
-    if command -v "$command" >/dev/null 2>&1; then
-      echo "{\"name\":\"${name}\",\"command\":\"${command}\",\"installed\":true}"
-    else
-      echo "{\"name\":\"${name}\",\"command\":\"${command}\",\"installed\":false}"
-    fi
-  }
+  install-plan)
+    smc_install_plan
+    ;;
 
-  cat <<JSON
-  {
-    "dependencies": [
-      $(dep_status "Git" "git"),
-      $(dep_status "Curl" "curl"),
-      $(dep_status "JQ" "jq"),
-      $(dep_status "PostgreSQL Client" "psql"),
-      $(dep_status "Dotnet" "dotnet"),
-      $(dep_status "Nginx" "nginx"),
-      $(dep_status "UFW" "ufw"),
-      $(dep_status "SS" "ss")
-    ]
-  }
-JSON
+  pools|pool-list)
+    smc_pool_list
+    ;;
+
+  pool-template)
+    smc_pool_template
+    ;;
+
+  pool-validate)
+    smc_pool_validate "${2:-}"
+    ;;
+
+  pool)
+    case "$subcmd" in
+      list)
+        smc_pool_list
+        ;;
+      template)
+        smc_pool_template
+        ;;
+      validate)
+        smc_pool_validate "${3:-}"
+        ;;
+      *)
+        echo "Unknown pool command: ${subcmd}" >&2
+        echo "Run: smc help" >&2
+        exit 1
+        ;;
+    esac
     ;;
 
   license)
@@ -252,145 +117,8 @@ JSON
 JSON
     ;;
 
-  pool-template)
-
-    cat <<JSON
-    {
-      "poolId": "",
-      "name": "",
-      "coin": "BTC",
-      "network": "mainnet",
-      "mode": "solo",
-      "enabled": true,
-
-      "stratum": {
-        "host": "",
-        "port": 3333,
-        "tls": false
-      },
-
-      "api": {
-        "enabled": true,
-        "port": 4000
-      },
-
-      "rpc": {
-        "host": "",
-        "port": 8332,
-        "username": "",
-        "password": ""
-      },
-
-      "wallet": {
-        "address": ""
-      },
-
-      "payout": {
-        "scheme": "SOLO",
-        "minimumPayment": "0.0001",
-        "feePercent": 0.75
-      }
-    }
-JSON
-    ;;
-
-  pool-validate)
-
-    FILE="${2:-}"
-
-    if [[ -z "$FILE" ]]; then
-      echo "Usage:"
-      echo "  smc pool-validate <pool.json>"
-      exit 1
-    fi
-
-    if [[ ! -f "$FILE" ]]; then
-      echo "ERROR: File not found:"
-      echo "$FILE"
-      exit 1
-    fi
-
-    REQUIRED_FIELDS=(
-      ".poolId"
-      ".coin"
-      ".network"
-      ".mode"
-      ".rpc.host"
-      ".rpc.port"
-      ".wallet.address"
-      ".payout.feePercent"
-    )
-
-    VALID=true
-
-    for FIELD in "${REQUIRED_FIELDS[@]}"; do
-
-      VALUE="$(jq -r "$FIELD // empty" "$FILE")"
-
-      if [[ -z "$VALUE" ]]; then
-
-        VALID=false
-
-        echo "Missing: $FIELD"
-
-      fi
-
-    done
-
-    if $VALID; then
-
-      cat <<JSON
-{
-  "valid": true,
-  "message": "Pool configuration is valid."
-}
-JSON
-
-    else
-
-      cat <<JSON
-{
-  "valid": false,
-  "message": "Pool configuration contains missing fields."
-}
-JSON
-
-      exit 1
-
-    fi
-
-    ;;
-
   help|--help|-h)
-    cat <<'HELP'
-Seymour MiningCore CLI
-
-Usage:
-  smc version
-  smc status
-  smc health
-  smc pools
-  smc deps
-  smc license
-  smc install-plan
-  smc pool-template
-  smc pool-validate <pool.json>
-
-Future:
-  smc install
-  smc pool add
-  smc pool list
-  smc pool validate
-  smc pool remove
-  smc pool enable
-  smc pool disable
-  smc node test
-  smc backup
-  smc restore
-  smc update
-  smc diagnostics
-  
-HELP
+    show_help
     ;;
 
   *)

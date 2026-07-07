@@ -38,11 +38,36 @@ JSON
 }
 
 smc_pool_list() {
-  cat <<JSON
+  local pool_dir="${ROOT_DIR}/config/pools"
+
+  mkdir -p "$pool_dir"
+
+  if ! ls "$pool_dir"/*.json >/dev/null 2>&1; then
+    cat <<JSON
 {
   "pools": []
 }
 JSON
+    return
+  fi
+
+  jq -s '{
+    pools: map({
+      poolId: .poolId,
+      name: .name,
+      coin: .coin,
+      network: .network,
+      mode: .mode,
+      enabled: .enabled,
+      stratumPort: .stratum.port,
+      apiPort: .api.port,
+      payoutScheme: .payout.scheme,
+      feePercent: .payout.feePercent,
+      walletAddress: .wallet.address,
+      rpcHost: .rpc.host,
+      rpcPort: .rpc.port
+    })
+  }' "$pool_dir"/*.json
 }
 
 smc_pool_validate() {

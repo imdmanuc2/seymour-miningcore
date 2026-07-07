@@ -252,6 +252,48 @@ JSON
 JSON
     ;;
 
+  pool-template)
+
+    cat <<JSON
+    {
+      "poolId": "",
+      "name": "",
+      "coin": "BTC",
+      "network": "mainnet",
+      "mode": "solo",
+      "enabled": true,
+
+      "stratum": {
+        "host": "",
+        "port": 3333,
+        "tls": false
+      },
+
+      "api": {
+        "enabled": true,
+        "port": 4000
+      },
+
+      "rpc": {
+        "host": "",
+        "port": 8332,
+        "username": "",
+        "password": ""
+      },
+
+      "wallet": {
+        "address": ""
+      },
+
+      "payout": {
+        "scheme": "SOLO",
+        "minimumPayment": "0.0001",
+        "feePercent": 0.75
+      }
+    }
+JSON
+    ;;
+
   help|--help|-h)
     cat <<'HELP'
 Seymour MiningCore CLI
@@ -271,6 +313,7 @@ Future:
   smc node test
   smc backup
   smc update
+  smc pool-template
 HELP
     ;;
 

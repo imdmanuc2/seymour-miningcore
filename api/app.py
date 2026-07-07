@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from flask import Flask, jsonify
 
+from api.config import API_VERSION, PRODUCT_NAME, READ_ONLY_MODE
+from api.middleware.security import register_security
 from api.routes.status import status_bp
 from api.routes.pools import pools_bp
 from api.routes.graph import graph_bp
@@ -10,6 +12,7 @@ from api.routes.readiness import readiness_bp
 
 def create_app():
     app = Flask(__name__)
+    register_security(app)
 
     app.register_blueprint(status_bp)
     app.register_blueprint(pools_bp)
@@ -17,12 +20,29 @@ def create_app():
     app.register_blueprint(services_bp)
     app.register_blueprint(readiness_bp)
 
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": "Not Found",
+            "message": "Endpoint not found."
+        }), 404
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+            "success": False,
+            "error": "Internal Server Error",
+            "message": "Unexpected API failure."
+        }), 500
+
     @app.get("/")
     def root():
         return jsonify({
-            "product": "Seymour MiningCore API",
-            "apiVersion": "v1",
+            "product": PRODUCT_NAME,
+            "apiVersion": API_VERSION,
             "status": "running",
+            "readOnlyMode": READ_ONLY_MODE,
             "endpoints": [
                 "/api/v1/status",
                 "/api/v1/health",
@@ -33,15 +53,24 @@ def create_app():
                 "/api/v1/services",
                 "/api/v1/services/<service_name>",
                 "/api/v1/readiness",
-                "/api/v1/version"
+                "/api/v1/version",
+                "/api/v1/live"
             ]
+        })
+
+    @app.get("/api/v1/live")
+    def live():
+        return jsonify({
+            "product": PRODUCT_NAME,
+            "apiVersion": API_VERSION,
+            "live": True
         })
 
     @app.get("/api/v1/version")
     def version():
         return jsonify({
             "product": "Seymour MiningCore",
-            "api": "v1",
+            "api": API_VERSION,
             "versionCommand": "smc version"
         })
 

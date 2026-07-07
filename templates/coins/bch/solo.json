@@ -1,0 +1,31 @@
+{
+  "poolId": "bch-solo",
+  "name": "Bitcoin Cash Solo",
+  "coin": "BCH",
+  "network": "mainnet",
+  "mode": "solo",
+  "enabled": true,
+  "stratum": {
+    "host": "",
+    "port": 3335,
+    "tls": false
+  },
+  "api": {
+    "enabled": true,
+    "port": 4002
+  },
+  "rpc": {
+    "host": "127.0.0.1",
+    "port": 8332,
+    "username": "rpcuser",
+    "password": "rpcpassword"
+  },
+  "wallet": {
+    "address": "YOUR_BCH_WALLET"
+  },
+  "payout": {
+    "scheme": "SOLO",
+    "minimumPayment": "0.0001",
+    "feePercent": 0.75
+  }
+}

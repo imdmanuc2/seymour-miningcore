@@ -1,0 +1,31 @@
+{
+  "poolId": "bch-public",
+  "name": "Bitcoin Cash Public",
+  "coin": "BCH",
+  "network": "mainnet",
+  "mode": "public",
+  "enabled": true,
+  "stratum": {
+    "host": "",
+    "port": 3336,
+    "tls": false
+  },
+  "api": {
+    "enabled": true,
+    "port": 4003
+  },
+  "rpc": {
+    "host": "127.0.0.1",
+    "port": 8332,
+    "username": "rpcuser",
+    "password": "rpcpassword"
+  },
+  "wallet": {
+    "address": "YOUR_BCH_WALLET"
+  },
+  "payout": {
+    "scheme": "PPLNS",
+    "minimumPayment": "0.0001",
+    "feePercent": 0.75
+  }
+}

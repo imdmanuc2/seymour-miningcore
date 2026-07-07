@@ -1,0 +1,31 @@
+{
+  "poolId": "btc-public",
+  "name": "Bitcoin Public",
+  "coin": "BTC",
+  "network": "mainnet",
+  "mode": "public",
+  "enabled": true,
+  "stratum": {
+    "host": "",
+    "port": 3334,
+    "tls": false
+  },
+  "api": {
+    "enabled": true,
+    "port": 4001
+  },
+  "rpc": {
+    "host": "127.0.0.1",
+    "port": 8332,
+    "username": "rpcuser",
+    "password": "rpcpassword"
+  },
+  "wallet": {
+    "address": "YOUR_BTC_WALLET"
+  },
+  "payout": {
+    "scheme": "PPLNS",
+    "minimumPayment": "0.0001",
+    "feePercent": 0.75
+  }
+}

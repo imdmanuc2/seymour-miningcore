@@ -206,3 +206,7 @@ fabric.properties
 .idea
 
 .fakeapi/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

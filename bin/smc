@@ -94,6 +94,12 @@ case "$cmd" in
       create)
         smc_pool_create "${@:3}"
         ;;
+      enable)
+        smc_pool_set_enabled "${3:-}" true
+        ;;
+      disable)
+        smc_pool_set_enabled "${3:-}" false
+        ;;
       *)
         echo "Unknown pool command: ${subcmd}" >&2
         echo "Run: smc help" >&2

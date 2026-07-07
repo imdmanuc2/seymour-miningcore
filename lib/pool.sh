@@ -306,3 +306,43 @@ JSON
     exit 1
   fi
 }
+
+smc_pool_set_enabled() {
+  local pool_id="${1:-}"
+  local enabled_value="${2:-}"
+
+  if [[ -z "$pool_id" || -z "$enabled_value" ]]; then
+    echo "Usage: smc pool enable <poolId> OR smc pool disable <poolId>" >&2
+    exit 1
+  fi
+
+  local file="${ROOT_DIR}/config/pools/${pool_id}.json"
+
+  if [[ ! -f "$file" ]]; then
+    cat <<JSON
+{
+  "success": false,
+  "message": "Pool not found.",
+  "poolId": "${pool_id}"
+}
+JSON
+    exit 1
+  fi
+
+  local tmp
+  tmp="$(mktemp)"
+
+  jq --argjson enabled "$enabled_value" '.enabled = $enabled' "$file" > "$tmp"
+  mv "$tmp" "$file"
+
+  cat <<JSON
+{
+  "success": true,
+  "message": "Pool updated.",
+  "poolId": "${pool_id}",
+  "enabled": ${enabled_value},
+  "configFile": "${file}",
+  "requiresRestart": true
+}
+JSON
+}

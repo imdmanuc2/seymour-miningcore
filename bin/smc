@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SMC_VERSION="0.9.0-alpha"
+SMC_PRODUCT="Seymour MiningCore"
+SMC_FEE_PERCENT="0.75"
+
+cmd="${1:-help}"
+
+json_status() {
+  local hostname os uptime_seconds disk_used memory_used
+  hostname="$(hostname)"
+  os="$(. /etc/os-release && echo "$PRETTY_NAME")"
+  uptime_seconds="$(awk '{print int($1)}' /proc/uptime)"
+  disk_used="$(df / | awk 'NR==2 {gsub("%","",$5); print $5}')"
+  memory_used="$(free | awk '/Mem:/ {printf "%.0f", ($3/$2)*100}')"
+
+  cat <<JSON
+{
+  "product": "${SMC_PRODUCT}",
+  "role": "managed-mining-node",
+  "version": "${SMC_VERSION}",
+  "apiVersion": "v1",
+  "status": "unknown",
+  "localConsoleUrl": "http://${hostname}:8559",
+  "developerFee": {
+    "required": true,
+    "percent": ${SMC_FEE_PERCENT},
+    "status": "active"
+  },
+  "nexus": {
+    "connected": false,
+    "commandCenterUrl": null,
+    "lastSync": null
+  },
+  "system": {
+    "hostname": "${hostname}",
+    "os": "${os}",
+    "cpuLoadPercent": 0,
+    "memoryUsedPercent": ${memory_used},
+    "diskUsedPercent": ${disk_used},
+    "uptimeSeconds": ${uptime_seconds}
+  },
+  "summary": {
+    "poolCount": 0,
+    "enabledPools": 0,
+    "soloPools": 0,
+    "publicPools": 0,
+    "connectedMiners": 0,
+    "totalHashrate": "0 H/s",
+    "blocksFound24h": 0,
+    "pendingPayments": 0
+  },
+  "pools": [],
+  "health": {
+    "overall": "unknown",
+    "checks": []
+  }
+}
+JSON
+}
+
+json_health() {
+  local postgres_status="unknown"
+  local disk_status="healthy"
+
+  if systemctl is-active postgresql >/dev/null 2>&1; then
+    postgres_status="healthy"
+  else
+    postgres_status="unhealthy"
+  fi
+
+  if [ "$(df / | awk 'NR==2 {gsub("%","",$5); print $5}')" -ge 90 ]; then
+    disk_status="warning"
+  fi
+
+  cat <<JSON
+{
+  "product": "${SMC_PRODUCT}",
+  "version": "${SMC_VERSION}",
+  "overall": "unknown",
+  "checks": [
+    {
+      "name": "postgresql",
+      "status": "${postgres_status}",
+      "message": "PostgreSQL service check"
+    },
+    {
+      "name": "disk",
+      "status": "${disk_status}",
+      "message": "Root disk usage check"
+    }
+  ]
+}
+JSON
+}
+
+case "$cmd" in
+  version)
+    echo "${SMC_PRODUCT} ${SMC_VERSION}"
+    ;;
+
+  status)
+    json_status
+    ;;
+
+  health)
+    json_health
+    ;;
+
+  pools|pool-list)
+    cat <<JSON
+{
+  "pools": []
+}
+JSON
+    ;;
+
+  license)
+    cat <<JSON
+{
+  "product": "${SMC_PRODUCT}",
+  "developerFee": {
+    "required": true,
+    "percent": ${SMC_FEE_PERCENT},
+    "status": "active"
+  },
+  "license": {
+    "status": "draft",
+    "type": "commercial-open-source"
+  }
+}
+JSON
+    ;;
+
+  help|--help|-h)
+    cat <<'HELP'
+Seymour MiningCore CLI
+
+Usage:
+  smc version
+  smc status
+  smc health
+  smc pools
+  smc license
+
+Future:
+  smc install
+  smc pool add
+  smc pool remove
+  smc node test
+  smc backup
+  smc update
+HELP
+    ;;
+
+  *)
+    echo "Unknown command: $cmd" >&2
+    echo "Run: smc help" >&2
+    exit 1
+    ;;
+esac

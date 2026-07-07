@@ -66,7 +66,9 @@ def root():
             "/api/v1/health",
             "/api/v1/pools",
             "/api/v1/graph",
-            "/api/v1/version"
+            "/api/v1/version",
+            "/api/v1/services",
+            "/api/v1/services/<service_name>"
         ]
     })
 
@@ -80,6 +82,25 @@ def status():
 @app.get("/api/v1/health")
 def health():
     data, code = run_smc("health")
+    return jsonify(data), code
+
+
+@app.get("/api/v1/services")
+def services():
+    miningcore, code1 = run_smc("service", "status", "seymour-miningcore")
+    api, code2 = run_smc("service", "status", "seymour-miningcore-api")
+
+    return jsonify({
+        "services": [
+            miningcore,
+            api
+        ]
+    }), 200
+
+
+@app.get("/api/v1/services/<service_name>")
+def service_status(service_name):
+    data, code = run_smc("service", "status", service_name)
     return jsonify(data), code
 
 

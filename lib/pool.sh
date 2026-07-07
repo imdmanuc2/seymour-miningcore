@@ -38,36 +38,7 @@ JSON
 }
 
 smc_pool_list() {
-  local pool_dir="${ROOT_DIR}/config/pools"
-
-  mkdir -p "$pool_dir"
-
-  if ! ls "$pool_dir"/*.json >/dev/null 2>&1; then
-    cat <<JSON
-{
-  "pools": []
-}
-JSON
-    return
-  fi
-
-  jq -s '{
-    pools: map({
-      poolId: .poolId,
-      name: .name,
-      coin: .coin,
-      network: .network,
-      mode: .mode,
-      enabled: .enabled,
-      stratumPort: .stratum.port,
-      apiPort: .api.port,
-      payoutScheme: .payout.scheme,
-      feePercent: .payout.feePercent,
-      walletAddress: .wallet.address,
-      rpcHost: .rpc.host,
-      rpcPort: .rpc.port
-    })
-  }' "$pool_dir"/*.json
+  pool_repo_list
 }
 
 smc_pool_validate() {
@@ -355,36 +326,5 @@ smc_pool_remove() {
     exit 1
   fi
 
-  local file="${ROOT_DIR}/config/pools/${pool_id}.json"
-  local removed_dir="${ROOT_DIR}/config/pools/removed"
-  local timestamp
-
-  timestamp="$(date +%Y%m%d-%H%M%S)"
-
-  if [[ ! -f "$file" ]]; then
-    cat <<JSON
-{
-  "success": false,
-  "message": "Pool not found.",
-  "poolId": "${pool_id}"
-}
-JSON
-    exit 1
-  fi
-
-  mkdir -p "$removed_dir"
-
-  local removed_file="${removed_dir}/${pool_id}-${timestamp}.json"
-
-  mv "$file" "$removed_file"
-
-  cat <<JSON
-{
-  "success": true,
-  "message": "Pool removed and backed up.",
-  "poolId": "${pool_id}",
-  "removedFile": "${removed_file}",
-  "requiresRestart": true
-}
-JSON
+  pool_repo_archive "$pool_id"
 }

@@ -1,0 +1,26 @@
+{
+  "edition": "beta-free",
+  "status": "active",
+  "billing": {
+    "mode": "free",
+    "subscriptionRequired": false
+  },
+  "limits": {
+    "maxMiners": null,
+    "maxPools": null,
+    "maxManagedServers": null
+  },
+  "features": {
+    "nexusCommandCenter": true,
+    "localConsole": true,
+    "api": true,
+    "graph": true,
+    "alerts": true,
+    "ai": true
+  },
+  "developerFee": {
+    "required": true,
+    "percent": 0.75,
+    "status": "active"
+  }
+}

@@ -91,6 +91,9 @@ case "$cmd" in
       validate)
         smc_pool_validate "${3:-}"
         ;;
+      create)
+        smc_pool_create "${@:3}"
+        ;;
       *)
         echo "Unknown pool command: ${subcmd}" >&2
         echo "Run: smc help" >&2

@@ -106,3 +106,178 @@ JSON
     exit 1
   fi
 }
+
+smc_pool_create() {
+  local coin=""
+  local mode=""
+  local pool_id=""
+  local name=""
+  local rpc_host=""
+  local rpc_port=""
+  local rpc_user=""
+  local rpc_password=""
+  local wallet=""
+  local stratum_port=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --coin)
+        coin="${2:-}"
+        shift 2
+        ;;
+      --mode)
+        mode="${2:-}"
+        shift 2
+        ;;
+      --pool-id)
+        pool_id="${2:-}"
+        shift 2
+        ;;
+      --name)
+        name="${2:-}"
+        shift 2
+        ;;
+      --rpc-host)
+        rpc_host="${2:-}"
+        shift 2
+        ;;
+      --rpc-port)
+        rpc_port="${2:-}"
+        shift 2
+        ;;
+      --rpc-user)
+        rpc_user="${2:-}"
+        shift 2
+        ;;
+      --rpc-password)
+        rpc_password="${2:-}"
+        shift 2
+        ;;
+      --wallet)
+        wallet="${2:-}"
+        shift 2
+        ;;
+      --stratum-port)
+        stratum_port="${2:-}"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1" >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  if [[ -z "$coin" || -z "$mode" ]]; then
+    echo "Usage: smc pool create --coin BTC --mode solo --pool-id btc-solo --wallet WALLET" >&2
+    exit 1
+  fi
+
+  coin_lower="$(echo "$coin" | tr '[:upper:]' '[:lower:]')"
+  mode_lower="$(echo "$mode" | tr '[:upper:]' '[:lower:]')"
+
+  template="${ROOT_DIR}/templates/coins/${coin_lower}/${mode_lower}.json"
+
+  if [[ ! -f "$template" ]]; then
+    cat <<JSON
+{
+  "success": false,
+  "message": "Template not found.",
+  "template": "${template}"
+}
+JSON
+    exit 1
+  fi
+
+  mkdir -p "${ROOT_DIR}/config/pools"
+
+  if [[ -z "$pool_id" ]]; then
+    pool_id="${coin_lower}-${mode_lower}"
+  fi
+
+  output="${ROOT_DIR}/config/pools/${pool_id}.json"
+
+  if [[ -f "$output" ]]; then
+    cat <<JSON
+{
+  "success": false,
+  "message": "Pool already exists.",
+  "poolId": "${pool_id}",
+  "configFile": "${output}"
+}
+JSON
+    exit 1
+  fi
+
+  tmp="$(mktemp)"
+  cp "$template" "$tmp"
+
+  jq_arg_string='.'
+
+  jq_args=()
+
+  jq_args+=(--arg poolId "$pool_id")
+  jq_arg_string+=' | .poolId = $poolId'
+
+  if [[ -n "$name" ]]; then
+    jq_args+=(--arg name "$name")
+    jq_arg_string+=' | .name = $name'
+  fi
+
+  if [[ -n "$rpc_host" ]]; then
+    jq_args+=(--arg rpcHost "$rpc_host")
+    jq_arg_string+=' | .rpc.host = $rpcHost'
+  fi
+
+  if [[ -n "$rpc_port" ]]; then
+    jq_args+=(--argjson rpcPort "$rpc_port")
+    jq_arg_string+=' | .rpc.port = $rpcPort'
+  fi
+
+  if [[ -n "$rpc_user" ]]; then
+    jq_args+=(--arg rpcUser "$rpc_user")
+    jq_arg_string+=' | .rpc.username = $rpcUser'
+  fi
+
+  if [[ -n "$rpc_password" ]]; then
+    jq_args+=(--arg rpcPassword "$rpc_password")
+    jq_arg_string+=' | .rpc.password = $rpcPassword'
+  fi
+
+  if [[ -n "$wallet" ]]; then
+    jq_args+=(--arg wallet "$wallet")
+    jq_arg_string+=' | .wallet.address = $wallet'
+  fi
+
+  if [[ -n "$stratum_port" ]]; then
+    jq_args+=(--argjson stratumPort "$stratum_port")
+    jq_arg_string+=' | .stratum.port = $stratumPort'
+  fi
+
+  jq "${jq_args[@]}" "$jq_arg_string" "$tmp" > "$output"
+  rm -f "$tmp"
+
+  if smc_pool_validate "$output" >/dev/null; then
+    cat <<JSON
+{
+  "success": true,
+  "message": "Pool created.",
+  "poolId": "${pool_id}",
+  "coin": "$(jq -r '.coin' "$output")",
+  "mode": "$(jq -r '.mode' "$output")",
+  "configFile": "${output}",
+  "requiresRestart": true
+}
+JSON
+  else
+    rm -f "$output"
+    cat <<JSON
+{
+  "success": false,
+  "message": "Pool validation failed. Config was not saved.",
+  "poolId": "${pool_id}"
+}
+JSON
+    exit 1
+  fi
+}

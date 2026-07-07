@@ -4,16 +4,71 @@ set -euo pipefail
 SMC_VERSION="0.9.0-alpha"
 SMC_PRODUCT="Seymour MiningCore"
 SMC_FEE_PERCENT="0.75"
+LOCAL_CONSOLE_PORT="8559"
+MININGCORE_SERVICE="seymour-miningcore"
 
 cmd="${1:-help}"
 
+json_escape() {
+  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+service_status() {
+  local service="$1"
+  if systemctl list-unit-files "${service}.service" >/dev/null 2>&1; then
+    if systemctl is-active "${service}" >/dev/null 2>&1; then
+      echo "running"
+    else
+      echo "stopped"
+    fi
+  else
+    echo "not-installed"
+  fi
+}
+
+port_status() {
+  local port="$1"
+  if ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]${port}$"; then
+    echo "open"
+  else
+    echo "closed"
+  fi
+}
+
+primary_ip() {
+  hostname -I 2>/dev/null | awk '{print $1}'
+}
+
+supported_os_status() {
+  local id version
+  id="$(. /etc/os-release && echo "$ID")"
+  version="$(. /etc/os-release && echo "${VERSION_ID:-unknown}")"
+
+  case "${id}:${version}" in
+    ubuntu:24.04|debian:12|debian:13)
+      echo "supported"
+      ;;
+    *)
+      echo "dev-unsupported"
+      ;;
+  esac
+}
+
 json_status() {
-  local hostname os uptime_seconds disk_used memory_used
+  local hostname os uptime_seconds disk_used memory_used ip os_support
+  local miningcore_status postgres_status console_port_status
+
   hostname="$(hostname)"
   os="$(. /etc/os-release && echo "$PRETTY_NAME")"
   uptime_seconds="$(awk '{print int($1)}' /proc/uptime)"
   disk_used="$(df / | awk 'NR==2 {gsub("%","",$5); print $5}')"
   memory_used="$(free | awk '/Mem:/ {printf "%.0f", ($3/$2)*100}')"
+  ip="$(primary_ip)"
+  os_support="$(supported_os_status)"
+
+  miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
+  postgres_status="$(service_status "postgresql")"
+  console_port_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
 
   cat <<JSON
 {
@@ -21,12 +76,17 @@ json_status() {
   "role": "managed-mining-node",
   "version": "${SMC_VERSION}",
   "apiVersion": "v1",
-  "status": "unknown",
-  "localConsoleUrl": "http://${hostname}:8559",
+  "status": "${miningcore_status}",
+  "localConsoleUrl": "http://${ip}:${LOCAL_CONSOLE_PORT}",
   "developerFee": {
     "required": true,
     "percent": ${SMC_FEE_PERCENT},
     "status": "active"
+  },
+  "license": {
+    "status": "draft",
+    "type": "commercial-open-source",
+    "tamperStatus": "unknown"
   },
   "nexus": {
     "connected": false,
@@ -34,12 +94,19 @@ json_status() {
     "lastSync": null
   },
   "system": {
-    "hostname": "${hostname}",
-    "os": "${os}",
+    "hostname": "$(json_escape "$hostname")",
+    "primaryIp": "${ip}",
+    "os": "$(json_escape "$os")",
+    "osSupport": "${os_support}",
     "cpuLoadPercent": 0,
     "memoryUsedPercent": ${memory_used},
     "diskUsedPercent": ${disk_used},
     "uptimeSeconds": ${uptime_seconds}
+  },
+  "services": {
+    "miningcore": "${miningcore_status}",
+    "postgresql": "${postgres_status}",
+    "localConsolePort": "${console_port_status}"
   },
   "summary": {
     "poolCount": 0,
@@ -61,34 +128,57 @@ JSON
 }
 
 json_health() {
-  local postgres_status="unknown"
-  local disk_status="healthy"
+  local miningcore_status postgres_status disk_status console_status os_support overall
+  miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
+  postgres_status="$(service_status "postgresql")"
+  console_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
+  os_support="$(supported_os_status)"
+  disk_status="healthy"
+  overall="healthy"
 
-  if systemctl is-active postgresql >/dev/null 2>&1; then
-    postgres_status="healthy"
-  else
-    postgres_status="unhealthy"
+  if [ "$(df / | awk 'NR==2 {gsub("%", "", $5); print $5}')" -ge 90 ]; then
+    disk_status="warning"
+    overall="warning"
   fi
 
-  if [ "$(df / | awk 'NR==2 {gsub("%","",$5); print $5}')" -ge 90 ]; then
-    disk_status="warning"
+  if [ "${postgres_status}" != "running" ]; then
+    overall="warning"
+  fi
+
+  if [ "${miningcore_status}" = "not-installed" ]; then
+    overall="warning"
   fi
 
   cat <<JSON
 {
   "product": "${SMC_PRODUCT}",
   "version": "${SMC_VERSION}",
-  "overall": "unknown",
+  "overall": "${overall}",
   "checks": [
+    {
+      "name": "miningcore-service",
+      "status": "${miningcore_status}",
+      "message": "Seymour MiningCore service status"
+    },
     {
       "name": "postgresql",
       "status": "${postgres_status}",
-      "message": "PostgreSQL service check"
+      "message": "PostgreSQL service status"
+    },
+    {
+      "name": "local-console-port",
+      "status": "${console_status}",
+      "message": "Local Console/API port ${LOCAL_CONSOLE_PORT}"
     },
     {
       "name": "disk",
       "status": "${disk_status}",
       "message": "Root disk usage check"
+    },
+    {
+      "name": "os-support",
+      "status": "${os_support}",
+      "message": "Official beta target is Ubuntu 24.04 LTS or Debian 12/13"
     }
   ]
 }
@@ -127,7 +217,8 @@ JSON
   },
   "license": {
     "status": "draft",
-    "type": "commercial-open-source"
+    "type": "commercial-open-source",
+    "tamperStatus": "unknown"
   }
 }
 JSON

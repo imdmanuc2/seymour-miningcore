@@ -10,6 +10,7 @@ source "${ROOT_DIR}/lib/status.sh"
 source "${ROOT_DIR}/lib/health.sh"
 source "${ROOT_DIR}/lib/deps.sh"
 source "${ROOT_DIR}/lib/install.sh"
+source "${ROOT_DIR}/lib/service.sh"
 source "${ROOT_DIR}/lib/pool.sh"
 
 cmd="${1:-help}"
@@ -118,6 +119,10 @@ case "$cmd" in
         exit 1
         ;;
     esac
+    ;;
+
+  service)
+    smc_service_action "${2:-status}" "${3:-${MININGCORE_SERVICE}}"
     ;;
 
   license)

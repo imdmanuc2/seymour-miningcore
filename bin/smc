@@ -100,6 +100,9 @@ case "$cmd" in
       disable)
         smc_pool_set_enabled "${3:-}" false
         ;;
+      remove)
+        smc_pool_remove "${3:-}"
+        ;;
       *)
         echo "Unknown pool command: ${subcmd}" >&2
         echo "Run: smc help" >&2

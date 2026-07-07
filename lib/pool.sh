@@ -346,3 +346,45 @@ JSON
 }
 JSON
 }
+
+smc_pool_remove() {
+  local pool_id="${1:-}"
+
+  if [[ -z "$pool_id" ]]; then
+    echo "Usage: smc pool remove <poolId>" >&2
+    exit 1
+  fi
+
+  local file="${ROOT_DIR}/config/pools/${pool_id}.json"
+  local removed_dir="${ROOT_DIR}/config/pools/removed"
+  local timestamp
+
+  timestamp="$(date +%Y%m%d-%H%M%S)"
+
+  if [[ ! -f "$file" ]]; then
+    cat <<JSON
+{
+  "success": false,
+  "message": "Pool not found.",
+  "poolId": "${pool_id}"
+}
+JSON
+    exit 1
+  fi
+
+  mkdir -p "$removed_dir"
+
+  local removed_file="${removed_dir}/${pool_id}-${timestamp}.json"
+
+  mv "$file" "$removed_file"
+
+  cat <<JSON
+{
+  "success": true,
+  "message": "Pool removed and backed up.",
+  "poolId": "${pool_id}",
+  "removedFile": "${removed_file}",
+  "requiresRestart": true
+}
+JSON
+}

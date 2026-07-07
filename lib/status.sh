@@ -16,6 +16,10 @@ smc_status() {
   miningcore_status="$(service_status "${MININGCORE_SERVICE}")"
   postgres_status="$(service_status "postgresql")"
   console_port_status="$(port_status "${LOCAL_CONSOLE_PORT}")"
+  pool_count="$(find "${ROOT_DIR}/config/pools" -maxdepth 1 -name '*.json' 2>/dev/null | wc -l)"
+  enabled_pools="$(jq -s '[.[] | select(.enabled == true)] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
+  solo_pools="$(jq -s '[.[] | select(.mode == "solo")] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
+  public_pools="$(jq -s '[.[] | select(.mode == "public")] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
 
   cat <<JSON
 {
@@ -56,10 +60,10 @@ smc_status() {
     "localConsolePort": "${console_port_status}"
   },
   "summary": {
-    "poolCount": 0,
-    "enabledPools": 0,
-    "soloPools": 0,
-    "publicPools": 0,
+    "poolCount": ${pool_count},
+    "enabledPools": ${enabled_pools},
+    "soloPools": ${solo_pools},
+    "publicPools": ${public_pools},
     "connectedMiners": 0,
     "totalHashrate": "0 H/s",
     "blocksFound24h": 0,

@@ -21,6 +21,7 @@ smc_status() {
   solo_pools="$(jq -s '[.[] | select(.mode == "solo")] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
   public_pools="$(jq -s '[.[] | select(.mode == "public")] | length' "${ROOT_DIR}"/config/pools/*.json 2>/dev/null || echo 0)"
   pools_json="$(pool_repo_list | jq -c '.pools')"
+  health_json="$(smc_health | jq -c '.')"
 
   cat <<JSON
 {
@@ -71,10 +72,7 @@ smc_status() {
     "pendingPayments": 0
   },
   "pools": ${pools_json},
-  "health": {
-    "overall": "unknown",
-    "checks": []
-  }
+  "health": ${health_json}
 }
 JSON
 }

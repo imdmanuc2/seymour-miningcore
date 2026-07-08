@@ -43,7 +43,7 @@ JSON
   now="$(identity_now)"
   hostname="$(hostname)"
   ip="$(primary_ip)"
-  os="$(os_pretty_name)"
+  os="$(. /etc/os-release && echo "${PRETTY_NAME:-unknown}")"
 
   cat > "$file" <<JSON
 {

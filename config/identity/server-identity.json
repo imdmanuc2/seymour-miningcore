@@ -1,0 +1,15 @@
+{
+  "serverId": "SMC-AAFDD7D8-E1D0-4242-BE2E-0E03E7A0AF87",
+  "product": "Seymour MiningCore",
+  "version": "0.9.1-alpha",
+  "hostname": "Nakamoto",
+  "primaryIp": "192.168.1.172",
+  "os": "Ubuntu 25.04",
+  "createdAt": "2026-07-08T18:45:18Z",
+  "registration": {
+    "status": "local",
+    "nexusConnected": false,
+    "commandCenterUrl": null,
+    "lastSync": null
+  }
+}

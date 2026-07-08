@@ -15,6 +15,7 @@ def readiness():
     license_data = smc_data("license", "validate")
     identity_data = smc_data("identity", "status")
     install_data = smc_data("install", "--status")
+    setup_data = smc_data("setup", "status")
 
     deps_missing = [
         dep for dep in deps_data.get("dependencies", [])
@@ -45,6 +46,7 @@ def readiness():
         "license": license_data,
         "identity": identity_data,
         "install": install_data,
+        "setup": setup_data,
         "summary": status_data.get("summary", {}),
         "system": status_data.get("system", {}),
         "services": status_data.get("services", {}),

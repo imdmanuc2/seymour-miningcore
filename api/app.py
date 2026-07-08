@@ -10,6 +10,7 @@ from api.routes.services import services_bp
 from api.routes.readiness import readiness_bp
 from api.routes.license import license_bp
 from api.routes.install import install_bp
+from api.routes.identity import identity_bp
 
 
 def create_app():
@@ -23,6 +24,7 @@ def create_app():
     app.register_blueprint(readiness_bp)
     app.register_blueprint(license_bp)
     app.register_blueprint(install_bp)
+    app.register_blueprint(identity_bp)
 
     @app.errorhandler(404)
     def not_found(error):

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SMC_VERSION="0.9.0-alpha"
+SMC_VERSION="$(cat "${ROOT_DIR}/VERSION" 2>/dev/null || echo "0.9.1-alpha")"
 SMC_PRODUCT="Seymour MiningCore"
 SMC_FEE_PERCENT="0.75"
 LOCAL_CONSOLE_PORT="8559"

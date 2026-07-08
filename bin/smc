@@ -17,6 +17,7 @@ source "${ROOT_DIR}/lib/identity.sh"
 source "${ROOT_DIR}/lib/pool.sh"
 source "${ROOT_DIR}/lib/doctor.sh"
 source "${ROOT_DIR}/lib/install_engine.sh"
+source "${ROOT_DIR}/lib/setup.sh"
 
 cmd="${1:-help}"
 subcmd="${2:-}"
@@ -106,6 +107,10 @@ case "$cmd" in
 
   install)
     smc_install_engine_run "${2:-run}"
+    ;;
+
+  setup)
+    smc_setup_command "${2:-status}"
     ;;
 
   pools|pool-list)

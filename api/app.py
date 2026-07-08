@@ -59,7 +59,9 @@ def create_app():
                 "/api/v1/readiness",
                 "/api/v1/version",
                 "/api/v1/live",
-                "/api/v1/license","/api/v1/install",
+                "/api/v1/license",
+                "/api/v1/install",
+                "/api/v1/license/validate",
                 "/api/v1/install/status",
                 "/api/v1/install/plan"
             ]

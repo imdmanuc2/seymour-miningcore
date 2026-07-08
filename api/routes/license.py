@@ -8,3 +8,9 @@ license_bp = Blueprint("license", __name__)
 def license_status():
     data, code = run_smc("license", "status")
     return jsonify(data), code
+
+
+@license_bp.get("/api/v1/license/validate")
+def license_validate():
+    data, code = run_smc("license", "validate")
+    return jsonify(data), code

@@ -32,6 +32,14 @@ System:
   smc health
   smc doctor
 
+Install:
+  smc install --plan
+  smc install --status
+  smc install --yes
+  smc install --resume
+  smc install --repair
+  smc setup status
+
 Diagnostics:
   smc deps
   smc install-plan
@@ -56,10 +64,16 @@ Security:
   smc token create
   smc token show
   smc token rotate
+  smc identity status
+  smc identity create
+  smc identity show
 
 Licensing:
   smc license status
   smc license show
+  smc license validate
+  smc license info
+  smc license create-beta-template
 
 Legacy Compatibility:
   smc pools
@@ -67,15 +81,12 @@ Legacy Compatibility:
   smc pool-validate <pool.json>
 
 Coming Soon:
-  smc install
-  smc node test
+  smc pair
   smc backup
   smc restore
   smc update
-  smc diagnostics
 HELP
 }
-
 case "$cmd" in
   version)
     echo "${SMC_PRODUCT} ${SMC_VERSION}"

@@ -148,6 +148,44 @@ smc_license_create_beta_template() {
 JSON
 }
 
+smc_license_info() {
+  local license edition status license_id licensed_to expires max_miners max_servers max_pools valid reason
+
+  license="$(smc_license_validate)"
+
+  edition="$(echo "$license" | jq -r '.edition // "unknown"')"
+  status="$(echo "$license" | jq -r '.status // "unknown"')"
+  license_id="$(echo "$license" | jq -r '.licenseId // "unknown"')"
+  licensed_to="$(echo "$license" | jq -r '.licensedTo // "unknown"')"
+  expires="$(echo "$license" | jq -r '.expiresAt // "Never"')"
+  max_miners="$(echo "$license" | jq -r '.limits.maxMiners // "Unlimited"')"
+  max_servers="$(echo "$license" | jq -r '.limits.maxServers // "Unlimited"')"
+  max_pools="$(echo "$license" | jq -r '.limits.maxPools // "Unlimited"')"
+  valid="$(echo "$license" | jq -r '.validation.valid')"
+  reason="$(echo "$license" | jq -r '.validation.reason')"
+
+  cat <<EOF
+----------------------------------------
+Seymour MiningCore License
+----------------------------------------
+Edition:       ${edition}
+Status:        ${status}
+License ID:    ${license_id}
+Licensed To:   ${licensed_to}
+Expires:       ${expires}
+
+Limits:
+  Miners:      ${max_miners}
+  Servers:     ${max_servers}
+  Pools:       ${max_pools}
+
+Validation:
+  Valid:       ${valid}
+  Reason:      ${reason}
+----------------------------------------
+EOF
+}
+
 smc_license_command() {
   local action="${1:-status}"
 
@@ -161,9 +199,12 @@ smc_license_command() {
     create-beta-template)
       smc_license_create_beta_template
       ;;
+    info)
+      smc_license_info
+      ;;
     *)
       echo "Unknown license command: $action" >&2
-      echo "Usage: smc license <status|show|validate|create-beta-template>" >&2
+      echo "Usage: smc license <status|show|validate|info|create-beta-template>" >&2
       exit 1
       ;;
   esac

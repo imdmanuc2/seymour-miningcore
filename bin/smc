@@ -13,6 +13,7 @@ source "${ROOT_DIR}/lib/install.sh"
 source "${ROOT_DIR}/lib/service.sh"
 source "${ROOT_DIR}/lib/token.sh"
 source "${ROOT_DIR}/lib/license.sh"
+source "${ROOT_DIR}/lib/identity.sh"
 source "${ROOT_DIR}/lib/pool.sh"
 source "${ROOT_DIR}/lib/doctor.sh"
 source "${ROOT_DIR}/lib/install_engine.sh"
@@ -163,6 +164,10 @@ case "$cmd" in
 
   license)
     smc_license_command "${2:-status}"
+    ;;
+
+  identity)
+    smc_identity_command "${2:-status}"
     ;;
 
   help|--help|-h)

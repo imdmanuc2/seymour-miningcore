@@ -183,8 +183,19 @@ smc_install_engine_run() {
   install_run_step 4 "dotnet" "Preparing .NET runtime installation"
   install_run_step 5 "postgresql" "Preparing PostgreSQL configuration"
   install_run_step 6 "api-service" "Preparing REST API service installation"
-  install_run_step 7 "license" "Verifying beta-free license"
-  install_run_step 8 "identity" "Preparing server identity"
+  install_run_step 7 "license" "Validating community license"
+
+  echo "[*] Generating server identity if missing"
+  install_update_step 8 "running" "Generating server identity if missing"
+  if ./bin/smc identity status | jq -e '.exists == true' >/dev/null 2>&1; then
+    install_update_step 8 "complete" "Server identity already exists"
+    echo "[✓] Server identity already exists"
+  else
+    ./bin/smc identity create >/dev/null
+    install_update_step 8 "complete" "Server identity created"
+    echo "[✓] Server identity created"
+  fi
+
   install_run_step 9 "token" "Preparing API token"
   install_run_step 10 "health" "Running final health checks"
   install_run_step 11 "complete" "Installation complete"

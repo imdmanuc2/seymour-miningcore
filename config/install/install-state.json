@@ -1,0 +1,99 @@
+{
+  "product": "Seymour MiningCore",
+  "version": "0.9.1-alpha",
+  "installer": "install-engine",
+  "status": "complete",
+  "startedAt": "2026-07-08T14:21:58Z",
+  "updatedAt": "2026-07-08T14:22:01Z",
+  "currentStep": 11,
+  "steps": [
+    {
+      "step": 1,
+      "key": "os-check",
+      "name": "Check Operating System",
+      "status": "complete",
+      "message": "Checking operating system",
+      "updatedAt": "2026-07-08T14:21:58Z"
+    },
+    {
+      "step": 2,
+      "key": "doctor",
+      "name": "Run Doctor Diagnostics",
+      "status": "complete",
+      "message": "Running doctor diagnostics",
+      "updatedAt": "2026-07-08T14:21:58Z"
+    },
+    {
+      "step": 3,
+      "key": "dependencies",
+      "name": "Install Dependencies",
+      "status": "complete",
+      "message": "Preparing dependency installation",
+      "updatedAt": "2026-07-08T14:21:58Z"
+    },
+    {
+      "step": 4,
+      "key": "dotnet",
+      "name": "Install .NET Runtime",
+      "status": "complete",
+      "message": "Preparing .NET runtime installation",
+      "updatedAt": "2026-07-08T14:21:59Z"
+    },
+    {
+      "step": 5,
+      "key": "postgresql",
+      "name": "Configure PostgreSQL",
+      "status": "complete",
+      "message": "Preparing PostgreSQL configuration",
+      "updatedAt": "2026-07-08T14:21:59Z"
+    },
+    {
+      "step": 6,
+      "key": "api-service",
+      "name": "Install REST API Service",
+      "status": "complete",
+      "message": "Preparing REST API service installation",
+      "updatedAt": "2026-07-08T14:21:59Z"
+    },
+    {
+      "step": 7,
+      "key": "license",
+      "name": "Install Beta-Free License",
+      "status": "complete",
+      "message": "Verifying beta-free license",
+      "updatedAt": "2026-07-08T14:21:59Z"
+    },
+    {
+      "step": 8,
+      "key": "identity",
+      "name": "Generate Server Identity",
+      "status": "complete",
+      "message": "Preparing server identity",
+      "updatedAt": "2026-07-08T14:22:00Z"
+    },
+    {
+      "step": 9,
+      "key": "token",
+      "name": "Generate API Token",
+      "status": "complete",
+      "message": "Preparing API token",
+      "updatedAt": "2026-07-08T14:22:00Z"
+    },
+    {
+      "step": 10,
+      "key": "health",
+      "name": "Run Final Health Checks",
+      "status": "complete",
+      "message": "Running final health checks",
+      "updatedAt": "2026-07-08T14:22:00Z"
+    },
+    {
+      "step": 11,
+      "key": "complete",
+      "name": "Installation Complete",
+      "status": "complete",
+      "message": "Installation complete",
+      "updatedAt": "2026-07-08T14:22:01Z"
+    }
+  ]
+}

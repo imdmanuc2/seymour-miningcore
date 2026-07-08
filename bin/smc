@@ -15,6 +15,7 @@ source "${ROOT_DIR}/lib/token.sh"
 source "${ROOT_DIR}/lib/license.sh"
 source "${ROOT_DIR}/lib/pool.sh"
 source "${ROOT_DIR}/lib/doctor.sh"
+source "${ROOT_DIR}/lib/install_engine.sh"
 
 cmd="${1:-help}"
 subcmd="${2:-}"
@@ -100,6 +101,10 @@ case "$cmd" in
 
   install-plan)
     smc_install_plan
+    ;;
+
+  install)
+    smc_install_engine_run "${2:-run}"
     ;;
 
   pools|pool-list)

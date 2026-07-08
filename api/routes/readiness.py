@@ -13,6 +13,8 @@ def readiness():
     api_service = smc_data("service", "status", "seymour-miningcore-api")
     graph_data = smc_data("graph")
     license_data = smc_data("license", "validate")
+    identity_data = smc_data("identity", "status")
+    install_data = smc_data("install", "--status")
 
     deps_missing = [
         dep for dep in deps_data.get("dependencies", [])
@@ -41,6 +43,8 @@ def readiness():
         "apiService": api_service,
         "graphSummary": graph_summary,
         "license": license_data,
+        "identity": identity_data,
+        "install": install_data,
         "summary": status_data.get("summary", {}),
         "system": status_data.get("system", {}),
         "services": status_data.get("services", {}),

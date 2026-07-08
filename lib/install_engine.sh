@@ -196,7 +196,16 @@ smc_install_engine_run() {
     echo "[✓] Server identity created"
   fi
 
-  install_run_step 9 "token" "Preparing API token"
+  echo "[*] Generating API token if missing"
+  install_update_step 9 "running" "Generating API token if missing"
+  if ./bin/smc token status | jq -e '.enabled == true' >/dev/null 2>&1; then
+    install_update_step 9 "complete" "API token already exists"
+    echo "[✓] API token already exists"
+  else
+    ./bin/smc token create >/dev/null
+    install_update_step 9 "complete" "API token created"
+    echo "[✓] API token created"
+  fi
   install_run_step 10 "health" "Running final health checks"
   install_run_step 11 "complete" "Installation complete"
 

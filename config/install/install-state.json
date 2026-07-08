@@ -3,8 +3,8 @@
   "version": "0.9.1-alpha",
   "installer": "install-engine",
   "status": "complete",
-  "startedAt": "2026-07-08T19:48:40Z",
-  "updatedAt": "2026-07-08T19:48:42Z",
+  "startedAt": "2026-07-08T20:07:44Z",
+  "updatedAt": "2026-07-08T20:07:46Z",
   "currentStep": 11,
   "steps": [
     {
@@ -13,7 +13,7 @@
       "name": "Check Operating System",
       "status": "complete",
       "message": "Checking operating system",
-      "updatedAt": "2026-07-08T19:48:40Z"
+      "updatedAt": "2026-07-08T20:07:44Z"
     },
     {
       "step": 2,
@@ -21,7 +21,7 @@
       "name": "Run Doctor Diagnostics",
       "status": "complete",
       "message": "Running doctor diagnostics",
-      "updatedAt": "2026-07-08T19:48:40Z"
+      "updatedAt": "2026-07-08T20:07:44Z"
     },
     {
       "step": 3,
@@ -29,7 +29,7 @@
       "name": "Install Dependencies",
       "status": "complete",
       "message": "Preparing dependency installation",
-      "updatedAt": "2026-07-08T19:48:40Z"
+      "updatedAt": "2026-07-08T20:07:45Z"
     },
     {
       "step": 4,
@@ -37,7 +37,7 @@
       "name": "Install .NET Runtime",
       "status": "complete",
       "message": "Preparing .NET runtime installation",
-      "updatedAt": "2026-07-08T19:48:41Z"
+      "updatedAt": "2026-07-08T20:07:45Z"
     },
     {
       "step": 5,
@@ -45,7 +45,7 @@
       "name": "Configure PostgreSQL",
       "status": "complete",
       "message": "Preparing PostgreSQL configuration",
-      "updatedAt": "2026-07-08T19:48:41Z"
+      "updatedAt": "2026-07-08T20:07:45Z"
     },
     {
       "step": 6,
@@ -53,7 +53,7 @@
       "name": "Install REST API Service",
       "status": "complete",
       "message": "Preparing REST API service installation",
-      "updatedAt": "2026-07-08T19:48:41Z"
+      "updatedAt": "2026-07-08T20:07:45Z"
     },
     {
       "step": 7,
@@ -61,7 +61,7 @@
       "name": "Install Beta-Free License",
       "status": "complete",
       "message": "Validating community license",
-      "updatedAt": "2026-07-08T19:48:41Z"
+      "updatedAt": "2026-07-08T20:07:46Z"
     },
     {
       "step": 8,
@@ -69,15 +69,15 @@
       "name": "Generate Server Identity",
       "status": "complete",
       "message": "Server identity already exists",
-      "updatedAt": "2026-07-08T19:48:42Z"
+      "updatedAt": "2026-07-08T20:07:46Z"
     },
     {
       "step": 9,
       "key": "token",
       "name": "Generate API Token",
       "status": "complete",
-      "message": "Preparing API token",
-      "updatedAt": "2026-07-08T19:48:42Z"
+      "message": "API token already exists",
+      "updatedAt": "2026-07-08T20:07:46Z"
     },
     {
       "step": 10,
@@ -85,7 +85,7 @@
       "name": "Run Final Health Checks",
       "status": "complete",
       "message": "Running final health checks",
-      "updatedAt": "2026-07-08T19:48:42Z"
+      "updatedAt": "2026-07-08T20:07:46Z"
     },
     {
       "step": 11,
@@ -93,7 +93,7 @@
       "name": "Installation Complete",
       "status": "complete",
       "message": "Installation complete",
-      "updatedAt": "2026-07-08T19:48:42Z"
+      "updatedAt": "2026-07-08T20:07:46Z"
     }
   ]
 }

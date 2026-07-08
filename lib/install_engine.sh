@@ -206,7 +206,22 @@ smc_install_engine_run() {
     install_update_step 9 "complete" "API token created"
     echo "[✓] API token created"
   fi
-  install_run_step 10 "health" "Running final health checks"
+  echo "[*] Running final health checks"
+  install_update_step 10 "running" "Running final health checks"
+
+  health_json="$(./bin/smc health)"
+  health_overall="$(echo "$health_json" | jq -r '.overall // "unknown"')"
+
+  if [[ "$health_overall" == "unhealthy" ]]; then
+    install_update_step 10 "failed" "Final health check failed"
+    install_set_status "failed"
+    echo "[x] Final health check failed"
+    echo "$health_json" | jq .
+    exit 1
+  fi
+
+  install_update_step 10 "complete" "Final health check completed with status: ${health_overall}"
+  echo "[✓] Final health check completed: ${health_overall}"
   install_run_step 11 "complete" "Installation complete"
 
   install_set_status "complete"

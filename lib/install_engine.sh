@@ -119,6 +119,34 @@ JSON
   jq . "$(install_state_file)"
 }
 
+
+install_require_sudo() {
+  if [[ "${EUID}" -ne 0 ]]; then
+    echo "[x] This install action requires sudo/root."
+    echo "Run: sudo ./bin/smc install --yes"
+    exit 1
+  fi
+}
+
+install_apt_packages() {
+  install_require_sudo
+
+  export DEBIAN_FRONTEND=noninteractive
+
+  apt-get update
+
+  apt-get install -y \
+    git \
+    curl \
+    jq \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    postgresql-client \
+    nginx \
+    ufw
+}
+
 install_run_step() {
   local step="$1"
   local key="$2"
@@ -179,7 +207,11 @@ smc_install_engine_run() {
 
   install_run_step 1 "os-check" "Checking operating system"
   install_run_step 2 "doctor" "Running doctor diagnostics"
-  install_run_step 3 "dependencies" "Preparing dependency installation"
+  echo "[*] Installing base dependencies"
+  install_update_step 3 "running" "Installing base dependencies"
+  install_apt_packages
+  install_update_step 3 "complete" "Base dependencies installed"
+  echo "[✓] Base dependencies installed"
   install_run_step 4 "dotnet" "Preparing .NET runtime installation"
   install_run_step 5 "postgresql" "Preparing PostgreSQL configuration"
   install_run_step 6 "api-service" "Preparing REST API service installation"

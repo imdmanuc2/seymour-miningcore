@@ -120,6 +120,20 @@ JSON
 }
 
 
+
+install_fix_repo_ownership() {
+  if [[ -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
+    echo "[*] Fixing repository config ownership for ${SUDO_USER}"
+    chown -R "${SUDO_USER}:${SUDO_USER}" \
+      "${ROOT_DIR}/config/install" \
+      "${ROOT_DIR}/config/database" \
+      "${ROOT_DIR}/config/identity" \
+      "${ROOT_DIR}/config/security" \
+      "${ROOT_DIR}/config/license" 2>/dev/null || true
+    echo "[✓] Repository config ownership fixed"
+  fi
+}
+
 install_require_sudo() {
   if [[ "${EUID}" -ne 0 ]]; then
     echo "[x] This install action requires sudo/root."
@@ -340,6 +354,8 @@ smc_install_engine_run() {
   install_run_step 11 "complete" "Installation complete"
 
   install_set_status "complete"
+
+  install_fix_repo_ownership
 
   echo "----------------------------------------"
   echo "Install engine completed in safe skeleton mode."

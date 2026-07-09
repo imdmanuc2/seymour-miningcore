@@ -1,3 +1,12 @@
+
+seymour_patch_randomx_headers() {
+  for f in /tmp/RandomX/src/tests/utility.hpp /tmp/RandomARQ/src/tests/utility.hpp; do
+    if [ -f "$f" ]; then
+      grep -q "#include <cstdint>" "$f" || sed -i '1i #include <cstdint>' "$f"
+    fi
+  done
+}
+
 #!/bin/bash
 
 OutDir=$1
@@ -27,5 +36,17 @@ export HAVE_FEATURE="$HAVE_AES $HAVE_SSE2 $HAVE_SSE3 $HAVE_SSSE3 $HAVE_AVX $HAVE
 (cd ../Native/libcryptonote && make clean && make) && mv ../Native/libcryptonote/libcryptonote.so "$OutDir"
 (cd ../Native/libcryptonight && make clean && make) && mv ../Native/libcryptonight/libcryptonight.so "$OutDir"
 
-((cd /tmp && rm -rf RandomX && git clone https://github.com/tevador/RandomX && cd RandomX && git checkout tags/v1.1.10 && mkdir build && cd build && cmake -DARCH=native .. && make) && (cd ../Native/librandomx && cp /tmp/RandomX/build/librandomx.a . && make clean && make) && mv ../Native/librandomx/librandomx.so "$OutDir")
-((cd /tmp && rm -rf RandomARQ && git clone https://github.com/arqma/RandomARQ && cd RandomARQ && git checkout 14850620439045b319fa6398f5a164715c4a66ce && mkdir build && cd build && cmake -DARCH=native .. && make) && (cd ../Native/librandomarq && cp /tmp/RandomARQ/build/librandomx.a . && make clean && make) && mv ../Native/librandomarq/librandomarq.so "$OutDir")
+((cd /tmp && rm -rf RandomX && git clone https://github.com/tevador/RandomX && cd RandomX && git checkout tags/v1.1.10 && mkdir build && cd build && 
+# Seymour patch for newer GCC/C++ toolchains:
+# RandomX/RandomARQ tests use uint64_t without explicitly including cstdint.
+if [ -f /tmp/RandomX/src/tests/utility.hpp ]; then
+  grep -q "#include <cstdint>" /tmp/RandomX/src/tests/utility.hpp || sed -i '1i #include <cstdint>' /tmp/RandomX/src/tests/utility.hpp
+fi
+
+if [ -f /tmp/RandomARQ/src/tests/utility.hpp ]; then
+  grep -q "#include <cstdint>" /tmp/RandomARQ/src/tests/utility.hpp || sed -i '1i #include <cstdint>' /tmp/RandomARQ/src/tests/utility.hpp
+fi
+
+seymour_patch_randomx_headers
+cmake -DARCH=native .. && make) && (cd ../Native/librandomx && cp /tmp/RandomX/build/librandomx.a . && make clean && make) && mv ../Native/librandomx/librandomx.so "$OutDir")
+((cd /tmp && rm -rf RandomARQ && git clone https://github.com/arqma/RandomARQ && cd RandomARQ && git checkout 14850620439045b319fa6398f5a164715c4a66ce && sed -i '1i #include <cstdint>' src/tests/utility.hpp && mkdir build && cd build && cmake -DARCH=native .. && make) && (cd ../Native/librandomarq && cp /tmp/RandomARQ/build/librandomx.a . && make clean && make) && mv ../Native/librandomarq/librandomarq.so "$OutDir")

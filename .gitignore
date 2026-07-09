@@ -210,3 +210,4 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+config/install/install-state.json

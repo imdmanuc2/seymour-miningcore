@@ -147,6 +147,38 @@ install_apt_packages() {
     ufw
 }
 
+
+install_dotnet_sdk() {
+  install_require_sudo
+
+  if command -v dotnet >/dev/null 2>&1; then
+    echo "[✓] dotnet already installed: $(dotnet --version)"
+    return
+  fi
+
+  export DEBIAN_FRONTEND=noninteractive
+
+  apt-get update
+
+  local candidates=("dotnet-sdk-10.0" "dotnet-sdk-9.0" "dotnet-sdk-8.0")
+  local installed="false"
+
+  for pkg in "${candidates[@]}"; do
+    echo "[*] Trying to install ${pkg}"
+    if apt-get install -y "$pkg"; then
+      installed="true"
+      break
+    fi
+  done
+
+  if [[ "$installed" != "true" ]]; then
+    echo "[x] Failed to install any supported .NET SDK package."
+    exit 1
+  fi
+
+  dotnet --info >/dev/null
+}
+
 install_run_step() {
   local step="$1"
   local key="$2"
@@ -212,7 +244,12 @@ smc_install_engine_run() {
   install_apt_packages
   install_update_step 3 "complete" "Base dependencies installed"
   echo "[✓] Base dependencies installed"
-  install_run_step 4 "dotnet" "Preparing .NET runtime installation"
+  echo "[*] Installing .NET SDK"
+  install_update_step 4 "running" "Installing .NET SDK"
+  install_dotnet_sdk
+  dotnet_version="$(dotnet --version 2>/dev/null || echo unknown)"
+  install_update_step 4 "complete" ".NET SDK installed: ${dotnet_version}"
+  echo "[✓] .NET SDK installed: ${dotnet_version}"
   install_run_step 5 "postgresql" "Preparing PostgreSQL configuration"
   install_run_step 6 "api-service" "Preparing REST API service installation"
   install_run_step 7 "license" "Validating community license"

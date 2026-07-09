@@ -214,3 +214,5 @@ config/install/install-state.json
 *.zip
 config/install/install-state.json
 config/database/postgresql.json
+config/install/install-state.json
+config/database/postgresql.json

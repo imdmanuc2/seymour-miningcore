@@ -212,3 +212,5 @@ __pycache__/
 *.pyd
 config/install/install-state.json
 *.zip
+config/install/install-state.json
+config/database/postgresql.json

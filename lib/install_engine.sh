@@ -179,6 +179,48 @@ install_dotnet_sdk() {
   dotnet --info >/dev/null
 }
 
+
+install_postgresql() {
+  install_require_sudo
+
+  export DEBIAN_FRONTEND=noninteractive
+
+  apt-get update
+  apt-get install -y postgresql postgresql-client
+
+  systemctl enable postgresql
+  systemctl start postgresql
+
+  local db_name="miningcore"
+  local db_user="miningcore"
+  local db_pass="miningcore_dev_password"
+
+  if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='${db_user}'" | grep -q 1; then
+    sudo -u postgres psql -c "CREATE USER ${db_user} WITH PASSWORD '${db_pass}';"
+  fi
+
+  if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='${db_name}'" | grep -q 1; then
+    sudo -u postgres createdb -O "${db_user}" "${db_name}"
+  fi
+
+  sudo -u postgres psql -d "${db_name}" -c "SELECT 1;" >/dev/null
+
+  mkdir -p "${ROOT_DIR}/config/database"
+
+  cat > "${ROOT_DIR}/config/database/postgresql.json" <<JSON
+{
+  "host": "127.0.0.1",
+  "port": 5432,
+  "database": "${db_name}",
+  "user": "${db_user}",
+  "password": "${db_pass}",
+  "sslMode": "disable"
+}
+JSON
+
+  chmod 600 "${ROOT_DIR}/config/database/postgresql.json"
+}
+
 install_run_step() {
   local step="$1"
   local key="$2"
@@ -250,7 +292,11 @@ smc_install_engine_run() {
   dotnet_version="$(dotnet --version 2>/dev/null || echo unknown)"
   install_update_step 4 "complete" ".NET SDK installed: ${dotnet_version}"
   echo "[✓] .NET SDK installed: ${dotnet_version}"
-  install_run_step 5 "postgresql" "Preparing PostgreSQL configuration"
+  echo "[*] Installing and configuring PostgreSQL"
+  install_update_step 5 "running" "Installing and configuring PostgreSQL"
+  install_postgresql
+  install_update_step 5 "complete" "PostgreSQL configured"
+  echo "[✓] PostgreSQL configured"
   install_run_step 6 "api-service" "Preparing REST API service installation"
   install_run_step 7 "license" "Validating community license"
 

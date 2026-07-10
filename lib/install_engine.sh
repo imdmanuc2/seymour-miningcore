@@ -235,6 +235,43 @@ JSON
   chmod 600 "${ROOT_DIR}/config/database/postgresql.json"
 }
 
+
+install_build_miningcore() {
+  install_require_sudo
+
+  local build_user="${SUDO_USER:-}"
+  local publish_tmp="/tmp/seymour-miningcore-publish"
+  local publish_dir="/opt/seymour-miningcore/miningcore"
+
+  if [[ -z "$build_user" || "$build_user" == "root" ]]; then
+    echo "[x] MiningCore build must be launched through sudo by a normal user."
+    echo "Run: sudo ./bin/smc install --repair"
+    exit 1
+  fi
+
+  rm -rf "$publish_tmp"
+  rm -rf /tmp/RandomX /tmp/RandomARQ
+
+  chown -R "${build_user}:${build_user}" "${ROOT_DIR}/src"
+
+  sudo -u "$build_user" \
+    dotnet restore "${ROOT_DIR}/src/Miningcore.sln"
+
+  sudo -u "$build_user" \
+    dotnet publish "${ROOT_DIR}/src/Miningcore/Miningcore.csproj" \
+      -c Release \
+      -o "$publish_tmp"
+
+  test -f "$publish_tmp/Miningcore.dll"
+
+  mkdir -p "$publish_dir"
+  rm -rf "${publish_dir:?}/"*
+  cp -a "$publish_tmp/." "$publish_dir/"
+
+  chown -R root:root "$publish_dir"
+  chmod -R a+rX "$publish_dir"
+}
+
 install_run_step() {
   local step="$1"
   local key="$2"
@@ -311,7 +348,11 @@ smc_install_engine_run() {
   install_postgresql
   install_update_step 5 "complete" "PostgreSQL configured"
   echo "[✓] PostgreSQL configured"
-  install_run_step 6 "api-service" "Preparing REST API service installation"
+  echo "[*] Building and publishing MiningCore"
+  install_update_step 6 "running" "Building and publishing MiningCore"
+  install_build_miningcore
+  install_update_step 6 "complete" "MiningCore built and published"
+  echo "[✓] MiningCore built and published"
   install_run_step 7 "license" "Validating community license"
 
   echo "[*] Generating server identity if missing"

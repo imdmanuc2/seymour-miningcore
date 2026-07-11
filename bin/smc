@@ -13,6 +13,7 @@ source "${ROOT_DIR}/lib/install.sh"
 source "${ROOT_DIR}/lib/service.sh"
 source "${ROOT_DIR}/lib/token.sh"
 source "${ROOT_DIR}/lib/license.sh"
+source "${ROOT_DIR}/lib/developer_fee.sh"
 source "${ROOT_DIR}/lib/identity.sh"
 source "${ROOT_DIR}/lib/pool.sh"
 source "${ROOT_DIR}/lib/doctor.sh"
@@ -180,6 +181,10 @@ case "$cmd" in
 
   license)
     smc_license_command "${2:-status}"
+    ;;
+
+  developer-fee)
+    smc_developer_fee_command "${2:-status}" "${3:-}"
     ;;
 
   identity)

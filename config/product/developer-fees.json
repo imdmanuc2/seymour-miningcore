@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "policyId": "seymour-developer-fee-v1",
+  "required": true,
+  "defaultPercent": 0.75,
+  "coins": {
+    "BTC": {
+      "enabled": true,
+      "address": "1ApJ27XgLMQyNxurvpNJ7YokPGPUAiBt26",
+      "addressType": "legacy",
+      "minimumPercent": 0.75
+    },
+    "BCH": {
+      "enabled": false,
+      "address": null,
+      "addressType": "cashaddr",
+      "minimumPercent": 0.75
+    }
+  }
+}

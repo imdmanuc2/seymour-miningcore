@@ -254,6 +254,22 @@ jq -n \
 chown root:"$SERVICE_USER" "$CONFIG_FILE"
 chmod 0640 "$CONFIG_FILE"
 
+echo "[*] Verifying official Seymour developer-fee policy"
+
+DEV_FEE_VALIDATION="$(
+  "${ROOT_DIR}/bin/smc" developer-fee validate-runtime     BTC     "$CONFIG_FILE"     btc-solo
+)" || {
+  echo "Generated pool configuration failed developer-fee validation."
+  printf '%s
+' "$DEV_FEE_VALIDATION" | jq .
+  exit 1
+}
+
+printf '%s
+' "$DEV_FEE_VALIDATION" | jq .
+
+echo "[✓] Official Seymour developer fee verified"
+
 chown -R root:root "$RUNTIME_DIR"
 chmod -R a+rX "$RUNTIME_DIR"
 

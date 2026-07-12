@@ -184,7 +184,7 @@ case "$cmd" in
     ;;
 
   developer-fee)
-    smc_developer_fee_command "${2:-status}" "${3:-}"
+    smc_developer_fee_command "${2:-status}" "${3:-}" "${4:-}" "${5:-}"
     ;;
 
   identity)
